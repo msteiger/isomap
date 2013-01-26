@@ -20,12 +20,17 @@ package pack;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * TODO Type description
  * @author Martin Steiger
  */
 public class Example
 {
+	final static Logger log = LoggerFactory.getLogger(Example.class);
+
 	public static void main(String[] args) throws Exception
 	{
 		final MyComponent comp = new MyComponent();

@@ -17,7 +17,8 @@
 
 package pack;
 
-import java.util.logging.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Updates a {@link Runnable} continuously
@@ -25,7 +26,7 @@ import java.util.logging.*;
  */
 public class RunnableLoop
 {
-	private final static Logger log = Logger.getLogger(Runnable.class.getName()); 
+	private final static Logger log = LoggerFactory.getLogger(RunnableLoop.class); 
 			
 	private volatile boolean shouldStop = false;
 	private volatile boolean shouldSleep = true;
@@ -76,7 +77,7 @@ public class RunnableLoop
 						}
 						catch (Exception e)
 						{
-							log.severe(e.toString());
+							log.error(e.toString());
 						}
 					}
 				}
@@ -97,7 +98,7 @@ public class RunnableLoop
 					}
 					catch (InterruptedException e)
 					{
-						log.warning("Update thread sleep() interrupted");
+						log.warn("Update thread sleep() interrupted");
 					}
 				}
 			}
