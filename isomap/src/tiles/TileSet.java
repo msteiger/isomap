@@ -20,12 +20,18 @@ package tiles;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import terrain.TerrainType;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.DiscreteDomains;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Range;
+import com.google.common.collect.Sets;
 
+import dirs.DiamondDirection;
 
 /**
  * TODO Type description
@@ -34,18 +40,41 @@ import terrain.TerrainType;
 public class TileSet
 {
 	private BufferedImage image;
-	private Map<TerrainType,List<TileTypeGroup>> map;
 	
 	private int tileWidth = 54;
 	private int tileHeight = 28;
 
+	private int tileImageWidth = 54;
+	private int tileImageHeight = 48;
+
 	private int offX = tileWidth;
 	private int offY = tileHeight + 10;
 
-	public TileSet(BufferedImage image, HashMap<TerrainType,List<TileTypeGroup>> map)
+	private HashMultimap<TerrainType, Integer> terrain = HashMultimap.create();
+	private Map<Integer, Pattern> patterns = new HashMap<Integer, Pattern>();
+	
+	public TileSet(BufferedImage image)
 	{
 		this.image = image;
-		this.map = map;
+	}
+	
+	public void defineTerrain(Range<Integer> range, TerrainType type, Pattern p)
+	{
+		defineTerrain(range.asSet(DiscreteDomains.integers()), type, p);
+	}
+	
+	public void defineTerrain(Set<Integer> set, TerrainType type, Pattern p)
+	{
+		for (Integer idx : set)
+		{
+			defineTerrain(idx, type, p);
+		}
+	}
+
+	public void defineTerrain(int idx, TerrainType type, Pattern p)
+	{
+		terrain.put(type, idx);
+		patterns.put(idx, p);
 	}
 	
 	public Image getImage(int tile_index)
@@ -67,12 +96,12 @@ public class TileSet
 	
 	public int getTileImageWidth()
 	{
-		return tileWidth;
+		return tileImageWidth;
 	}
 	
 	public int getTileImageHeight()
 	{
-		return tileHeight + 20;
+		return tileImageHeight;
 	}
 
 	public int getTileWidth()
@@ -85,28 +114,25 @@ public class TileSet
 		return tileHeight;
 	}
 
-	public int getIndexFor(TerrainType type, Pattern pattern)
+	public Set<Integer> getIndicesFor(TerrainType type)
 	{
-		TerrainType[] needPattern = pattern.getTuple();
+		return terrain.get(type);
+	}
+	
+	public Set<Integer> getIndicesFor(TerrainType type, final Pattern pattern)
+	{
+		Set<Integer> indices = getIndicesFor(type);
 
-		try
+		Predicate<Integer> predicate = new Predicate<Integer>()
 		{
-			for (TileTypeGroup ttg : map.get(type))
+			@Override
+			public boolean apply(Integer input)
 			{
-				TerrainType[] tilePattern = ttg.getPattern().getTuple();
-
-				if (doesMatch(needPattern, tilePattern))
-				{
-					return ttg.getIndex();
-				}
+				return doesMatch(patterns.get(input), pattern);
 			}
-		}
-		catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-		}
+		};
 
-		return 0;
+		return Sets.filter(indices, predicate);
 	}
 
 	/**
@@ -114,14 +140,12 @@ public class TileSet
 	 * @param tilePattern
 	 * @return
 	 */
-	private boolean doesMatch(TerrainType[] needPattern, TerrainType[] tilePattern)
+	private boolean doesMatch(Pattern supp, Pattern needed)
 	{
-		for (int i = 0; i < tilePattern.length; i++)
+		for (DiamondDirection dir : DiamondDirection.values())
 		{
-			if (tilePattern[i].compareTo(needPattern[i]) < 0)
-			{
+			if (supp.get(dir).compareTo(needed.get(dir)) < 0) 
 				return false;
-			}
 		}
 		
 		return true;

@@ -15,44 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package tiles;
-
-import static dirs.DiamondDirection.*;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import terrain.TerrainType;
-import dirs.DiamondDirection;
+package dirs;
 
 /**
  * TODO Type description
  * @author Martin Steiger
  */
-public class Pattern
+public enum DiamondDirection
 {
-	private Map<DiamondDirection, TerrainType> map = new HashMap<DiamondDirection, TerrainType>();
-
-	/**
-	 * @param tuple
-	 */
-	public Pattern(TerrainType nw, TerrainType ne, TerrainType se, TerrainType sw)
-	{
-		map.put(NORTH_WEST, nw);
-		map.put(SOUTH_WEST, sw);
-		map.put(SOUTH_EAST, se);
-		map.put(NORTH_EAST, ne);
-	}
-
-	public int size()
-	{
-		return map.size();
-	}
-	
-	public TerrainType get(DiamondDirection dir)
-	{
-		return map.get(dir);
-	}
-	
+	NORTH_EAST,
+	SOUTH_EAST,
+	SOUTH_WEST,
+	NORTH_WEST,
 }

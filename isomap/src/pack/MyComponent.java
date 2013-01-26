@@ -23,6 +23,7 @@ import java.awt.Image;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import javax.swing.JComponent;
 
@@ -88,25 +89,28 @@ public class MyComponent extends JComponent
 				TerrainType ne = terrainModel.getNeighborFor(x, y, OctDirection.NORTH_EAST);
 				TerrainType se = terrainModel.getNeighborFor(x, y, OctDirection.SOUTH_EAST);
 				TerrainType sw = terrainModel.getNeighborFor(x, y, OctDirection.SOUTH_WEST);
-				TerrainType[] tuple = new TerrainType[] { nw, ne, se, sw };
-				Pattern pattern = new Pattern(tuple); 
+				Pattern pattern = new Pattern(nw, ne, se, sw); 
 				
-				int source_index = tileset.getIndexFor(type, pattern);
-
-				Image image = tileset.getImage(source_index);
-
-				int sx1 = tileset.getTileImageX(source_index);
-				int sy1 = tileset.getTileImageY(source_index);
-				int sx2 = sx1 + imgWidth;
-				int sy2 = sy1 + imgHeight;
+				Set<Integer> indices = tileset.getIndicesFor(type, pattern);
+				if (!indices.isEmpty())
+				{
+					int source_index = indices.iterator().next();
+	
+					Image image = tileset.getImage(source_index);
+	
+					int sx1 = tileset.getTileImageX(source_index);
+					int sy1 = tileset.getTileImageY(source_index);
+					int sx2 = sx1 + imgWidth;
+					int sy2 = sy1 + imgHeight;
+					
+					int dx1 = offX + x * width + (y % 2) * width / 2;
+					int dy1 = offY + y * height / 2;
+					int dx2 = dx1 + imgWidth;
+					int dy2 = dy1 + imgHeight;
+	
+					g.drawImage(image, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
+				}
 				
-				int dx1 = offX + x * width + (y % 2) * width / 2;
-				int dy1 = offY + y * height / 2;
-				int dx2 = dx1 + imgWidth;
-				int dy2 = dy1 + imgHeight;
-
-				g.drawImage(image, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
-
 //				g.setColor(Color.WHITE);
 //				g.drawString(String.format("%d / %d", x, y), dx1 + 14, dy1 + 18);
 			}
