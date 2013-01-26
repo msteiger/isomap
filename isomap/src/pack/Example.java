@@ -54,7 +54,6 @@ public class Example
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(comp);
 		frame.setVisible(true);
-		
 		rl.join();
 	}
 }
