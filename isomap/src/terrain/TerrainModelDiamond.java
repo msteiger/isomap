@@ -17,8 +17,14 @@
 
 package terrain;
 
-import dirs.OctDirection;
 import static terrain.TerrainType.UNDEFINED;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import tiles.TileSet;
+import dirs.OctDirection;
 
 /**
  * TODO Type description
@@ -27,13 +33,15 @@ import static terrain.TerrainType.UNDEFINED;
 public class TerrainModelDiamond
 {
 	private final TerrainData data;
+	private TileSet tileSet;
 
 	/**
 	 * @param data the terrain data
 	 */
-	public TerrainModelDiamond(TerrainData data)
+	public TerrainModelDiamond(TerrainData data, TileSet tileSet)
 	{
 		this.data = data;
+		this.tileSet = tileSet;
 	}
 	
 //	private static boolean isEven(int v)
@@ -79,6 +87,27 @@ public class TerrainModelDiamond
 		return data.getTerrain(x, y);
 	}
 	
+	/**
+	 * @param x the x coord.
+	 * @param y the y coord.
+	 * @return the tile index
+	 */
+	public Set<Integer> getIndex(int x, int y)
+	{
+		TerrainType type = getTerrain(x, y);
+		Map<OctDirection, TerrainType> pattern = new HashMap<OctDirection, TerrainType>();
+		
+		for (OctDirection dir : OctDirection.values())
+		{
+			TerrainType neigh = getNeighborFor(x, y, dir);
+			
+			if (neigh != UNDEFINED)
+				pattern.put(dir, neigh);
+		}
+
+		return tileSet.getIndicesFor(type, pattern);
+	}
+		
 	public TerrainType getNeighborFor(int x, int y, OctDirection dir)
 	{
 		switch (dir)

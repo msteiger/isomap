@@ -17,23 +17,34 @@
 
 package tiles;
 
-import static terrain.TerrainType.*;
+import static terrain.TerrainType.FOREST;
+import static terrain.TerrainType.GRASS;
+import static terrain.TerrainType.MOUNTAIN;
+import static terrain.TerrainType.WATER;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import com.google.common.collect.ContiguousSet;
-import com.google.common.collect.DiscreteDomains;
-import com.google.common.collect.Ranges;
-import com.google.common.collect.Sets;
-
 import terrain.TerrainType;
+
+import com.google.common.collect.Ranges;
+
+import dirs.OctDirection;
 
 
 
@@ -47,34 +58,133 @@ public class TileSetBuilder
 	{
 	}
 	
+
+	/**
+	 * @param string
+	 */
+	public void writeToStream(TileSet ts, OutputStream fos) throws IOException
+	{
+		OutputStreamWriter writer = new OutputStreamWriter(fos, "UTF-8");
+		PrintWriter bw = new PrintWriter(writer);
+
+		bw.println("# Tileset Definition File");
+		bw.println("# ver. 0.1");
+		bw.println("tileWidth = " + ts.getTileWidth());
+		bw.println("tileHeight = " + ts.getTileHeight());
+		bw.println("tileImageWidth = " + ts.getTileImageWidth());
+		bw.println("tileImageWidth = " + ts.getTileImageWidth());
+		bw.println("tileOverlapX = " + ts.getOverlapX());
+		bw.println("tileOverlapY = " + ts.getOverlapY());
+
+		for (TileIndexGroup tig : ts.getIndexGroups())
+		{
+			bw.println(tig.getIndices() + " - " + tig.getTerrain() + " - " + tig.getBorders());
+		}
+		
+		bw.close();
+	}
+	
+
+	/**
+	 * @param string
+	 */
+	public TileSet readFromStream(InputStream is) throws IOException
+	{
+		InputStreamReader reader = new InputStreamReader(is, "UTF-8");
+		BufferedReader bw = new BufferedReader(reader);
+
+		BufferedImage image = ImageIO.read(new FileInputStream("data/tileset.png"));
+		TileSet ts = new TileSet(image);
+		
+		String line;
+		while ((line = bw.readLine()) != null)
+		{
+			line = line.trim();
+
+			int comm = line.indexOf('#');
+
+			if (comm >= 0)
+				line = line.substring(0, comm);			
+			
+			int tileWidth;
+			int tileHeight;
+			int tileImageWidth;
+			int tileImageHeight;
+			int tileOverlapX;
+			int tileOverlapY;
+			
+			String[] parts = line.split("=");
+			if (parts.length == 2)
+			{
+				String key = parts[0].trim().toLowerCase();
+				String value = parts[1].trim().toLowerCase();
+				
+				if (key.equals("tileWidth"))
+					tileWidth = Integer.valueOf(value);
+				
+				if (key.equals("tileHeight"))
+					tileHeight = Integer.valueOf(value);
+				
+				if (key.equals("tileImageWidth"))
+					tileImageWidth = Integer.valueOf(value);
+				
+				if (key.equals("tileImageHeight"))
+					tileImageHeight = Integer.valueOf(value);
+				
+				if (key.equals("tileOverlapX"))
+					tileOverlapX = Integer.valueOf(value);
+				
+				if (key.equals("tileOverlapY"))
+					tileOverlapY = Integer.valueOf(value);
+			}
+
+			parts = line.split("-");
+			
+			if (parts.length == 3)
+			{
+				Set<Integer> idSet = new HashSet<Integer>();
+				TerrainType terr;
+				Map<OctDirection, TerrainType> dirMap = new HashMap<OctDirection, TerrainType>();
+				
+				{
+					int start = parts[0].indexOf('[') + 1;
+					int end = parts[0].indexOf(']');
+					String[] idxList = parts[0].substring(start, end).split(","); 
+					
+					for (String ids : idxList)
+						idSet.add(Integer.valueOf(ids.trim()));
+				}
+				
+				{
+					terr = TerrainType.valueOf(parts[1].trim());
+				}
+				
+				{
+					int start = parts[2].indexOf('{') + 1;
+					int end = parts[2].indexOf('}');
+					String[] idxList = parts[2].substring(start, end).split(","); 
+				
+					for (String p : idxList)
+					{
+						String[] kvp = p.split("=");
+						dirMap.put(OctDirection.valueOf(kvp[0].trim()), TerrainType.valueOf(kvp[1].trim()));
+					}
+				}
+				
+				ts.defineTerrain(idSet, terr, dirMap);
+			}
+		}
+		
+		bw.close();
+		
+		return ts;
+	}
+	
 	public TileSet build(InputStream stream) throws IOException
 	{
-		BufferedImage image = ImageIO.read(stream);
-
-		TileSet ts = new TileSet(image);
-
-		ts.defineTerrain(Ranges.closed(8, 11), GRASS, new Pattern(GRASS, GRASS, GRASS, GRASS ));
-
-		ts.defineTerrain(Ranges.closed(2, 7), WATER, new Pattern(WATER, WATER, WATER, WATER ));
-		ts.defineTerrain(Ranges.closed(12, 13), WATER, new Pattern(WATER, GRASS, WATER, WATER ));
-		ts.defineTerrain(Ranges.closed(14, 15), WATER, new Pattern(WATER, WATER, GRASS, WATER ));
-		ts.defineTerrain(Ranges.closed(16, 17), WATER, new Pattern(WATER, GRASS, GRASS, WATER ));
-		ts.defineTerrain(Ranges.closed(18, 19), WATER, new Pattern(WATER, WATER, WATER, GRASS ));
-		ts.defineTerrain(Ranges.closed(20, 21), WATER, new Pattern(WATER, GRASS, WATER, GRASS ));
-		ts.defineTerrain(Ranges.closed(22, 23), WATER, new Pattern(WATER, WATER, GRASS, GRASS ));
-		ts.defineTerrain(Ranges.closed(24, 25), WATER, new Pattern(WATER, GRASS, GRASS, GRASS ));
-		ts.defineTerrain(Ranges.closed(26, 27), WATER, new Pattern(GRASS, WATER, WATER, WATER ));
-		ts.defineTerrain(Ranges.closed(28, 29), WATER, new Pattern(GRASS, GRASS, WATER, WATER ));
-		ts.defineTerrain(Ranges.closed(30, 31), WATER, new Pattern(GRASS, WATER, GRASS, WATER ));
-		ts.defineTerrain(Ranges.closed(32, 33), WATER, new Pattern(GRASS, GRASS, GRASS, WATER ));
-		ts.defineTerrain(Ranges.closed(34, 35), WATER, new Pattern(GRASS, WATER, WATER, GRASS ));
-		ts.defineTerrain(Ranges.closed(36, 37), WATER, new Pattern(GRASS, GRASS, WATER, GRASS ));
-		ts.defineTerrain(Ranges.closed(38, 39), WATER, new Pattern(GRASS, WATER, GRASS, GRASS ));
-		ts.defineTerrain(Ranges.closed(40, 41), WATER, new Pattern(GRASS, GRASS, GRASS, GRASS ));
-
-		ts.defineTerrain(Ranges.closed(48, 55), MOUNTAIN, new Pattern(GRASS, GRASS, GRASS, GRASS ));		
-		ts.defineTerrain(Ranges.closed(72, 79), FOREST, new Pattern(GRASS, GRASS, GRASS, GRASS ));		
-		
+		TileSet ts;
+	
+		ts = readFromStream(new FileInputStream("data/treasurefleet.tsd"));
 		
 		return ts;
 	}

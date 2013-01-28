@@ -19,7 +19,17 @@ package tiles;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,7 +41,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 
-import dirs.DiamondDirection;
+import dirs.OctDirection;
 
 /**
  * TODO Type description
@@ -47,36 +57,46 @@ public class TileSet
 	private int tileImageWidth = 54;
 	private int tileImageHeight = 48;
 
-	private int offX = tileWidth;
-	private int offY = tileHeight + 10;
+	private int overlapX = 0;
+	private int overlapY = 10;
 
-	private HashMultimap<TerrainType, Integer> terrain = HashMultimap.create();
-	private Map<Integer, Pattern> patterns = new HashMap<Integer, Pattern>();
+	List<TileIndexGroup> tigs = new ArrayList<TileIndexGroup>();
 	
 	public TileSet(BufferedImage image)
 	{
 		this.image = image;
 	}
 	
-	public void defineTerrain(Range<Integer> range, TerrainType type, Pattern p)
+	public void defineTerrain(Set<Integer> set, TerrainType type, Map<OctDirection, TerrainType> borders)
 	{
-		defineTerrain(range.asSet(DiscreteDomains.integers()), type, p);
-	}
-	
-	public void defineTerrain(Set<Integer> set, TerrainType type, Pattern p)
-	{
+		TileIndexGroup tig = getIndexGroup(type, borders);
+		
 		for (Integer idx : set)
-		{
-			defineTerrain(idx, type, p);
-		}
+			tig.addIndex(idx);
 	}
 
-	public void defineTerrain(int idx, TerrainType type, Pattern p)
+	private TileIndexGroup getIndexGroup(TerrainType type, Map<OctDirection, TerrainType> borders) 
 	{
-		terrain.put(type, idx);
-		patterns.put(idx, p);
-	}
+		for (TileIndexGroup tig : tigs)
+		{
+			if (tig.getTerrain() == type)
+			{
+				if (tig.getBorders().equals(borders))
+					return tig;
+			}
+		}
+		
+		TileIndexGroup tig = new TileIndexGroup();
+		tig.setTerrain(type);
+		
+		for (OctDirection dir : borders.keySet())
+			tig.setBorder(dir, borders.get(dir));
 	
+		tigs.add(tig);
+				
+		return tig;
+	}
+
 	public Image getImage(int tile_index)
 	{
 		return image;
@@ -85,13 +105,13 @@ public class TileSet
 	public int getTileImageX(int tile_index)
 	{
 		int six = tile_index % 8;
-		return six * offX;
+		return six * (tileImageWidth - overlapX);
 	}
 
 	public int getTileImageY(int tile_index)
 	{
 		int siy = tile_index / 8;
-		return siy * offY;
+		return siy * (tileImageHeight - overlapY);
 	}
 	
 	public int getTileImageWidth()
@@ -114,25 +134,23 @@ public class TileSet
 		return tileHeight;
 	}
 
-	public Set<Integer> getIndicesFor(TerrainType type)
-	{
-		return terrain.get(type);
-	}
+//	public Set<Integer> getIndicesFor(TerrainType type)
+//	{
+//		return terrain.get(type);
+//	}
 	
-	public Set<Integer> getIndicesFor(TerrainType type, final Pattern pattern)
+	public Set<Integer> getIndicesFor(TerrainType type, final Map<OctDirection, TerrainType> pattern)
 	{
-		Set<Integer> indices = getIndicesFor(type);
-
-		Predicate<Integer> predicate = new Predicate<Integer>()
+		for (TileIndexGroup tig : tigs)
 		{
-			@Override
-			public boolean apply(Integer input)
+			if (tig.getTerrain() == type)
 			{
-				return doesMatch(patterns.get(input), pattern);
+				if (doesMatch(tig, pattern))
+					return tig.getIndices();
 			}
 		};
 
-		return Sets.filter(indices, predicate);
+		return Collections.singleton(1);
 	}
 
 	/**
@@ -140,14 +158,56 @@ public class TileSet
 	 * @param tilePattern
 	 * @return
 	 */
-	private boolean doesMatch(Pattern supp, Pattern needed)
+	private boolean doesMatch(TileIndexGroup supp, Map<OctDirection, TerrainType> needed)
 	{
-		for (DiamondDirection dir : DiamondDirection.values())
+		for (OctDirection dir : needed.keySet())
 		{
-			if (supp.get(dir).compareTo(needed.get(dir)) < 0) 
+			TerrainType ava = supp.getBorder(dir);
+			
+			if (ava == TerrainType.UNDEFINED)
+				continue;
+			
+			if (ava.compareTo(needed.get(dir)) < 0) 
 				return false;
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * @return the overlapX
+	 */
+	public int getOverlapX() 
+	{
+		return overlapX;
+	}
+
+	/**
+	 * @param overlapX the overlapX to set
+	 */
+	public void setOverlapX(int overlapX) 
+	{
+		this.overlapX = overlapX;
+	}
+
+	/**
+	 * @return the overlapY
+	 */
+	public int getOverlapY() 
+	{
+		return overlapY;
+	}
+
+	/**
+	 * @param overlapY the overlapY to set
+	 */
+	public void setOverlapY(int overlapY) 
+	{
+		this.overlapY = overlapY;
+	}
+
+	public List<TileIndexGroup> getIndexGroups() 
+	{
+		return Collections.unmodifiableList(tigs);
 	}
 }
