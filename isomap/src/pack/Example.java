@@ -50,7 +50,7 @@ public class Example
 				});
 			}
 		});
-		rl.sleep();
+//		rl.sleep();
 		rl.setMaxFps(3);
 
 		JFrame frame = new JFrame();

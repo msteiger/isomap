@@ -36,7 +36,7 @@ public class TerrainLoader
 	
 	}
 	
-	public TerrainData load(InputStream stream) throws IOException
+	public GridData<TerrainType> load(InputStream stream) throws IOException
 	{
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
 
@@ -51,7 +51,7 @@ public class TerrainLoader
 		int mapHeight = rows.size();
 		int mapWidth = rows.get(0).length();
 		
-		TerrainData terrain = new TerrainData(mapWidth, mapHeight);
+		GridData<TerrainType> terrain = new GridData<TerrainType>(mapWidth, mapHeight, TerrainType.UNDEFINED);
 		
 		for (int y = 0; y < mapHeight; y++)
 		{
@@ -63,7 +63,7 @@ public class TerrainLoader
 				char ch = rows.get(y).charAt(x);
 				TerrainType type = convertChar(ch);
 				
-				terrain.setTerrain(x, y, type);  
+				terrain.setData(x, y, type);  
 			}
 		}
 		

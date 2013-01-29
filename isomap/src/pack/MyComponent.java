@@ -27,9 +27,10 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
-import terrain.TerrainData;
+import terrain.GridData;
 import terrain.TerrainLoader;
 import terrain.TerrainModelDiamond;
+import terrain.TerrainType;
 import tiles.TileSet;
 import tiles.TileSetBuilder;
 
@@ -52,7 +53,7 @@ public class MyComponent extends JComponent
 	{
 		InputStream terrainDataStream = new FileInputStream("data/example.txt");
 		TerrainLoader terrainLoader = new TerrainLoader();
-		TerrainData terrainData = terrainLoader.load(terrainDataStream);
+		GridData terrainData = terrainLoader.load(terrainDataStream);
 		
 		InputStream tilesetImageStream = new FileInputStream("data/tileset.png");
 		TileSetBuilder tileSetBuilder = new TileSetBuilder();
@@ -72,8 +73,8 @@ public class MyComponent extends JComponent
 		int imgWidth = tileset.getTileImageWidth();
 		int imgHeight = tileset.getTileImageHeight();
 		
-		int offX = (width - imgWidth) / 2;
-		int offY = (height - imgHeight) / 2;
+		int offX = tileset.getOverlapX();
+		int offY = tileset.getOverlapY();
 
 		g.setFont(g.getFont().deriveFont(9.0f).deriveFont(Font.BOLD));
 
@@ -81,10 +82,8 @@ public class MyComponent extends JComponent
 		{
 			for (int x = 0; x < terrainModel.getMapWidth(); x++)
 			{
-				Set<Integer> indices = terrainModel.getIndex(x, y);
+				int source_index = terrainModel.getIndex(x, y);
 
-				int source_index = indices.iterator().next();
-	
 				Image image = tileset.getImage(source_index);
 
 				int sx1 = tileset.getTileImageX(source_index);
@@ -92,8 +91,8 @@ public class MyComponent extends JComponent
 				int sx2 = sx1 + imgWidth;
 				int sy2 = sy1 + imgHeight;
 				
-				int dx1 = offX + x * width + (y % 2) * width / 2;
-				int dy1 = offY + y * height / 2;
+				int dx1 = x * width + (y % 2) * width / 2 - offX;
+				int dy1 = y * height / 2 - offY;
 				int dx2 = dx1 + imgWidth;
 				int dy2 = dy1 + imgHeight;
 
@@ -110,6 +109,17 @@ public class MyComponent extends JComponent
 	 */
 	public void animate()
 	{
+		for (int y = 0; y < terrainModel.getMapHeight(); y++)
+		{
+			for (int x = 0; x < terrainModel.getMapWidth(); x++)
+			{
+				if (terrainModel.getTerrain(x, y) == TerrainType.WATER)
+				{
+					terrainModel.updateIndex(x, y);
+				}
+			}
+		}
+
 		repaint();
 	}
 

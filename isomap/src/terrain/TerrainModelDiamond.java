@@ -19,8 +19,11 @@ package terrain;
 
 import static terrain.TerrainType.UNDEFINED;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import tiles.TileSet;
@@ -32,23 +35,54 @@ import dirs.OctDirection;
  */
 public class TerrainModelDiamond
 {
-	private final TerrainData data;
-	private TileSet tileSet;
+	private static final Integer INVALID_INDEX = 0;
+
+	private final GridData<TerrainType> terrainData;
+	private final GridData<Integer> indexData;
+	
+	private final TileSet tileSet;
+
+	private final Random r = new Random(12345);
 
 	/**
 	 * @param data the terrain data
 	 */
-	public TerrainModelDiamond(TerrainData data, TileSet tileSet)
+	public TerrainModelDiamond(GridData<TerrainType> data, TileSet tileSet)
 	{
-		this.data = data;
+		int width = data.getWidth();
+		int height = data.getHeight();
+
+		this.terrainData = data;
+		this.indexData = new GridData<Integer>(width, height, INVALID_INDEX);
 		this.tileSet = tileSet;
+
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				updateIndex(x, y);
+			}
+		}
+	}
+
+	public void updateIndex(int x, int y) 
+	{
+		List<Integer> indices = new ArrayList<Integer>(computeIndices(x, y));
+
+		int oldIndex = getIndex(x, y);
+		
+		// exclude old index from the set of possible new indices
+		int rand = r.nextInt(indices.size() - 1) + 1;		
+
+		// oldPos can be -1 if the old index was not set before
+		int oldPos = indices.indexOf(oldIndex);
+		
+		// but rand is always in [1..size] so the sum is at least 0
+		Integer index = indices.get((oldPos + rand) % indices.size());
+		
+		indexData.setData(x, y, index);
 	}
 	
-//	private static boolean isEven(int v)
-//	{
-//		return v % 2 == 0;
-//	}
-
 	private static boolean isOdd(int v)
 	{
 		return v % 2 == 1;
@@ -59,7 +93,7 @@ public class TerrainModelDiamond
 	 */
 	public int getMapHeight()
 	{
-		return data.getMapHeight();
+		return terrainData.getHeight();
 	}
 
 	/**
@@ -67,7 +101,7 @@ public class TerrainModelDiamond
 	 */
 	public int getMapWidth()
 	{
-		return data.getMapWidth();
+		return terrainData.getWidth();
 	}	
 	
 	/**
@@ -84,7 +118,12 @@ public class TerrainModelDiamond
 		if (y < 0 || y >= getMapHeight())
 			return UNDEFINED;
 		
-		return data.getTerrain(x, y);
+		return terrainData.getData(x, y);
+	}
+	
+	public int getIndex(int x, int y)
+	{
+		return indexData.getData(x, y);
 	}
 	
 	/**
@@ -92,7 +131,7 @@ public class TerrainModelDiamond
 	 * @param y the y coord.
 	 * @return the tile index
 	 */
-	public Set<Integer> getIndex(int x, int y)
+	public Set<Integer> computeIndices(int x, int y)
 	{
 		TerrainType type = getTerrain(x, y);
 		Map<OctDirection, TerrainType> pattern = new HashMap<OctDirection, TerrainType>();
@@ -107,8 +146,9 @@ public class TerrainModelDiamond
 
 		return tileSet.getIndicesFor(type, pattern);
 	}
-		
-	public TerrainType getNeighborFor(int x, int y, OctDirection dir)
+
+	
+	private TerrainType getNeighborFor(int x, int y, OctDirection dir)
 	{
 		switch (dir)
 		{

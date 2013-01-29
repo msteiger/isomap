@@ -17,24 +17,16 @@
 
 package tiles;
 
-import static dirs.OctDirection.EAST;
-import static dirs.OctDirection.NORTH;
-import static dirs.OctDirection.NORTH_EAST;
-import static dirs.OctDirection.NORTH_WEST;
-import static dirs.OctDirection.SOUTH;
-import static dirs.OctDirection.SOUTH_EAST;
-import static dirs.OctDirection.SOUTH_WEST;
-import static dirs.OctDirection.WEST;
-
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import terrain.TerrainType;
+
 import common.DefaultValueMap;
 
-import terrain.TerrainType;
 import dirs.OctDirection;
 
 /**
@@ -43,35 +35,20 @@ import dirs.OctDirection;
  */
 public class TileIndexGroup
 {
-	private Map<OctDirection, TerrainType> map = 
+	private final Map<OctDirection, TerrainType> map = 
 			new DefaultValueMap<OctDirection, TerrainType>(TerrainType.UNDEFINED, 
 					new EnumMap<OctDirection, TerrainType>(OctDirection.class));
 
-	private TerrainType terrain;
+	private final TerrainType terrain;
 
-	private Set<Integer> indices = new HashSet<Integer>();
-	
-	public TileIndexGroup()
-	{
-		for (OctDirection dir : OctDirection.values())
-		{
-			map.put(dir, TerrainType.UNDEFINED);
-		}
-	}
+	private final Set<Integer> indices = new HashSet<Integer>();
 	
 	/**
 	 * @param tuple
 	 */
-	public TileIndexGroup(TerrainType nw, TerrainType ne, TerrainType se, TerrainType sw)
+	public TileIndexGroup(TerrainType terrain, Map<OctDirection, TerrainType> borders)
 	{
-		map.put(NORTH_WEST, nw);
-		map.put(SOUTH_WEST, sw);
-		map.put(SOUTH_EAST, se);
-		map.put(NORTH_EAST, ne);
-	}
-	
-	public void setTerrain(TerrainType terrain)
-	{
+		map.putAll(borders);
 		this.terrain = terrain;
 	}
 
@@ -83,11 +60,6 @@ public class TileIndexGroup
 		return terrain;
 	}
 
-	public void setBorder(OctDirection dir, TerrainType t)
-	{
-		map.put(dir, t);
-	}
-	
 	public TerrainType getBorder(OctDirection dir)
 	{
 		return map.get(dir);

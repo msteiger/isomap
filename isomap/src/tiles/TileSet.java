@@ -60,7 +60,7 @@ public class TileSet
 	private int overlapX = 0;
 	private int overlapY = 10;
 
-	List<TileIndexGroup> tigs = new ArrayList<TileIndexGroup>();
+	private final List<TileIndexGroup> tigs = new ArrayList<TileIndexGroup>();
 	
 	public TileSet(BufferedImage image)
 	{
@@ -86,12 +86,8 @@ public class TileSet
 			}
 		}
 		
-		TileIndexGroup tig = new TileIndexGroup();
-		tig.setTerrain(type);
+		TileIndexGroup tig = new TileIndexGroup(type, borders);
 		
-		for (OctDirection dir : borders.keySet())
-			tig.setBorder(dir, borders.get(dir));
-	
 		tigs.add(tig);
 				
 		return tig;
