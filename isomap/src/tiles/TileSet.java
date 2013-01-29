@@ -19,28 +19,13 @@ package tiles;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import terrain.TerrainType;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.DiscreteDomains;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
-
 import dirs.OctDirection;
 
 /**
@@ -98,13 +83,13 @@ public class TileSet
 		return image;
 	}
 
-	public int getTileImageX(int tile_index)
+	public int getImageX(int tile_index)
 	{
 		int six = tile_index % 8;
 		return six * (tileImageWidth - overlapX);
 	}
 
-	public int getTileImageY(int tile_index)
+	public int getImageY(int tile_index)
 	{
 		int siy = tile_index / 8;
 		return siy * (tileImageHeight - overlapY);
@@ -130,11 +115,6 @@ public class TileSet
 		return tileHeight;
 	}
 
-//	public Set<Integer> getIndicesFor(TerrainType type)
-//	{
-//		return terrain.get(type);
-//	}
-	
 	public Set<Integer> getIndicesFor(TerrainType type, final Map<OctDirection, TerrainType> pattern)
 	{
 		for (TileIndexGroup tig : tigs)

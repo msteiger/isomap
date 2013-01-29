@@ -126,6 +126,17 @@ public class TerrainModelDiamond
 		return indexData.getData(x, y);
 	}
 	
+
+	public int getWorldX(int x, int y) 
+	{
+		return x * tileSet.getTileWidth() + (y % 2) * tileSet.getTileWidth() / 2 - tileSet.getOverlapX();
+	}
+
+	public int getWorldY(int x, int y)
+	{
+		return y * tileSet.getTileHeight() / 2 - tileSet.getOverlapY();
+	}
+
 	/**
 	 * @param x the x coord.
 	 * @param y the y coord.

@@ -20,10 +20,12 @@ package pack;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
 
 import javax.swing.JComponent;
 
@@ -45,7 +47,8 @@ public class MyComponent extends JComponent
 	
 	private TerrainModelDiamond terrainModel;
 	private TileSet tileset;
-
+	private Viewport view = new Viewport();
+	
 	/**
 	 * 
 	 */
@@ -53,13 +56,52 @@ public class MyComponent extends JComponent
 	{
 		InputStream terrainDataStream = new FileInputStream("data/example.txt");
 		TerrainLoader terrainLoader = new TerrainLoader();
-		GridData terrainData = terrainLoader.load(terrainDataStream);
+		GridData<TerrainType> terrainData = terrainLoader.load(terrainDataStream);
 		
-		InputStream tilesetImageStream = new FileInputStream("data/tileset.png");
 		TileSetBuilder tileSetBuilder = new TileSetBuilder();
-		tileset = tileSetBuilder.build(tilesetImageStream);
+		tileset = tileSetBuilder.readFromStream(new FileInputStream("data/treasurefleet.tsd"));
 
 		terrainModel = new TerrainModelDiamond(terrainData, tileset);
+		
+		MouseAdapter ma = new MouseAdapter() 
+		{
+			Point oldPt = null;
+			
+			@Override
+			public void mousePressed(MouseEvent e) 
+			{
+				System.out.println("PRESS");
+				oldPt = e.getPoint();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) 
+			{
+//				oldPt = null;
+			}
+
+
+			@Override
+			public void mouseDragged(MouseEvent e) 
+			{
+				if (oldPt == null)
+					return;
+				
+				int dx = e.getX() - oldPt.x;
+				int dy = e.getY() - oldPt.y;
+				
+				oldPt.x = e.getX();
+				oldPt.y = e.getY();
+				
+				view.translate(-dx, -dy);
+
+				repaint();
+			}
+			
+		};
+		
+		addMouseListener(ma);
+		addMouseMotionListener(ma);
 	}
 
 	@Override
@@ -67,15 +109,9 @@ public class MyComponent extends JComponent
 	{
 		super.paintComponent(g);
 
-		int width = tileset.getTileWidth();
-		int height = tileset.getTileHeight();
-
 		int imgWidth = tileset.getTileImageWidth();
 		int imgHeight = tileset.getTileImageHeight();
 		
-		int offX = tileset.getOverlapX();
-		int offY = tileset.getOverlapY();
-
 		g.setFont(g.getFont().deriveFont(9.0f).deriveFont(Font.BOLD));
 
 		for (int y = 0; y < terrainModel.getMapHeight(); y++)
@@ -86,15 +122,18 @@ public class MyComponent extends JComponent
 
 				Image image = tileset.getImage(source_index);
 
-				int sx1 = tileset.getTileImageX(source_index);
-				int sy1 = tileset.getTileImageY(source_index);
+				int sx1 = tileset.getImageX(source_index);
+				int sy1 = tileset.getImageY(source_index);
 				int sx2 = sx1 + imgWidth;
 				int sy2 = sy1 + imgHeight;
 				
-				int dx1 = x * width + (y % 2) * width / 2 - offX;
-				int dy1 = y * height / 2 - offY;
-				int dx2 = dx1 + imgWidth;
-				int dy2 = dy1 + imgHeight;
+				int worldX = terrainModel.getWorldX(x, y);
+				int worldY = terrainModel.getWorldY(x, y);
+
+				int dx1 = view.worldXToScreenX(worldX);
+				int dy1 = view.worldYToScreenY(worldY);
+				int dx2 = view.worldXToScreenX(worldX + imgWidth);
+				int dy2 = view.worldYToScreenY(worldY + imgHeight);
 
 				g.drawImage(image, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
 				

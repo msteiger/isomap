@@ -17,22 +17,15 @@
 
 package tiles;
 
-import static terrain.TerrainType.FOREST;
-import static terrain.TerrainType.GRASS;
-import static terrain.TerrainType.MOUNTAIN;
-import static terrain.TerrainType.WATER;
-
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -41,9 +34,6 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 
 import terrain.TerrainType;
-
-import com.google.common.collect.Ranges;
-
 import dirs.OctDirection;
 
 
@@ -69,6 +59,7 @@ public class TileSetBuilder
 
 		bw.println("# Tileset Definition File");
 		bw.println("# ver. 0.1");
+		bw.println("image = data/tileset.png");
 		bw.println("tileWidth = " + ts.getTileWidth());
 		bw.println("tileHeight = " + ts.getTileHeight());
 		bw.println("tileImageWidth = " + ts.getTileImageWidth());
@@ -176,15 +167,6 @@ public class TileSetBuilder
 		}
 		
 		bw.close();
-		
-		return ts;
-	}
-	
-	public TileSet build(InputStream stream) throws IOException
-	{
-		TileSet ts;
-	
-		ts = readFromStream(new FileInputStream("data/treasurefleet.tsd"));
 		
 		return ts;
 	}
