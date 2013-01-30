@@ -17,8 +17,11 @@
 
 package pack; 
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,30 +38,22 @@ public class Example
 	{
 		final MyComponent comp = new MyComponent();
 
-		RunnableLoop rl = new RunnableLoop(new Runnable()
+		Timer timer = new Timer(333, new ActionListener()
 		{
 			@Override
-			public void run()
+			public void actionPerformed(ActionEvent e)
 			{
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						comp.animate();
-					}
-				});
+				comp.animate();
 			}
 		});
-//		rl.sleep();
-		rl.setMaxFps(3);
-
+		
+		timer.start();
+		
 		JFrame frame = new JFrame();
 		frame.setTitle("Simple example");
 		frame.setSize(950, 400);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(comp);
 		frame.setVisible(true);
-		rl.join();
 	}
 }
