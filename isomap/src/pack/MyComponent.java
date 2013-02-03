@@ -17,6 +17,10 @@
 
 package pack;
 
+import input.TilemapMouseAdapter;
+import input.ViewportMouseAdapter;
+
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -24,13 +28,19 @@ import java.awt.event.MouseAdapter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JComponent;
+
+import common.CollectionListener;
+import common.ObservableSet;
 
 import terrain.GridData;
 import terrain.TerrainLoader;
 import terrain.TerrainModelDiamond;
 import terrain.TerrainType;
+import terrain.Tile;
 import tiles.TileSet;
 import tiles.TileSetBuilder;
 
@@ -46,7 +56,7 @@ public class MyComponent extends JComponent
 	private TerrainModelDiamond terrainModel;
 	private TileSet tileset;
 	private Viewport view = new Viewport();
-	
+	private ObservableSet<Tile> hoveredTiles = new ObservableSet<Tile>(new HashSet<Tile>()); 
 	
 	/**
 	 * 
@@ -68,6 +78,24 @@ public class MyComponent extends JComponent
 		addMouseListener(ma);
 		addMouseMotionListener(ma);
 		addMouseWheelListener(ma);
+		
+		hoveredTiles.addListener(new CollectionListener<Tile>()
+		{
+			@Override
+			public void added(Tile object)
+			{
+				repaint();
+			}
+
+			@Override
+			public void removed(Tile object)
+			{
+				repaint();
+			}
+		});
+		
+		TilemapMouseAdapter tma = new TilemapMouseAdapter(view, terrainModel, hoveredTiles);
+		addMouseMotionListener(tma);
 	}
 
 	
@@ -85,37 +113,62 @@ public class MyComponent extends JComponent
 	 */
 	private void drawTileset(Graphics g)
 	{
-		int imgWidth = tileset.getTileImageWidth();
-		int imgHeight = tileset.getTileImageHeight();
-		
-		g.setFont(g.getFont().deriveFont(9.0f).deriveFont(Font.BOLD));
-
 		for (int y = 0; y < terrainModel.getMapHeight(); y++)
 		{
 			for (int x = 0; x < terrainModel.getMapWidth(); x++)
 			{
 				int source_index = terrainModel.getIndex(x, y);
-
-				Image image = tileset.getImage(source_index);
-
-				int sx1 = tileset.getImageX(source_index);
-				int sy1 = tileset.getImageY(source_index);
-				int sx2 = sx1 + imgWidth;
-				int sy2 = sy1 + imgHeight;
-				
-				int worldX = terrainModel.getWorldImageX(x, y);
-				int worldY = terrainModel.getWorldImageY(x, y);
-
-				int dx1 = view.worldXToScreenX(worldX);
-				int dy1 = view.worldYToScreenY(worldY);
-				int dx2 = view.worldXToScreenX(worldX + imgWidth);
-				int dy2 = view.worldYToScreenY(worldY + imgHeight);
-
-				g.drawImage(image, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
+				drawTile(g, source_index, x, y);
 			}
 		}
+
+		g.setFont(g.getFont().deriveFont(9.0f).deriveFont(Font.BOLD));
+		for (Tile t : hoveredTiles)
+		{
+			drawTile(g, 0, t.getMapX(), t.getMapY());
+
+			int mapX = t.getMapX();
+			int mapY = t.getMapY();
+			
+			int worldX = terrainModel.getWorldX(mapX, mapY);
+			int worldY = terrainModel.getWorldY(mapX, mapY);
+
+			int dx1 = view.worldXToScreenX(worldX);
+			int dy1 = view.worldYToScreenY(worldY);
+
+			g.setColor(Color.WHITE);
+			String str = String.format("%d / %d", mapX, mapY);
+			int tx = dx1 + 27 - (g.getFontMetrics().stringWidth(str)) / 2;
+			int ty = dy1 + 18;
+			g.drawString(str, tx, ty);
+		}
+
 	}
 
+	private void drawTile(Graphics g, int tileIndex, int x, int y)
+	{
+		int imgWidth = tileset.getTileImageWidth();
+		int imgHeight = tileset.getTileImageHeight();
+
+		Image image = tileset.getImage(tileIndex);
+
+		int sx1 = tileset.getImageX(tileIndex);
+		int sy1 = tileset.getImageY(tileIndex);
+		int sx2 = sx1 + imgWidth;
+		int sy2 = sy1 + imgHeight;
+		
+		int worldX = terrainModel.getWorldImageX(x, y);
+		int worldY = terrainModel.getWorldImageY(x, y);
+
+		int dx1 = view.worldXToScreenX(worldX);
+		int dy1 = view.worldYToScreenY(worldY);
+		int dx2 = view.worldXToScreenX(worldX + imgWidth);
+		int dy2 = view.worldYToScreenY(worldY + imgHeight);
+
+		g.drawImage(image, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
+	}
+
+	
 	/**
 	 * 
 	 */

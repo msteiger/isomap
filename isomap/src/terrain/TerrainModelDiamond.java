@@ -39,6 +39,7 @@ public class TerrainModelDiamond
 
 	private final GridData<TerrainType> terrainData;
 	private final GridData<Integer> indexData;
+	private final GridData<Tile> tiles;
 	
 	private final TileSet tileSet;
 
@@ -54,12 +55,14 @@ public class TerrainModelDiamond
 
 		this.terrainData = data;
 		this.indexData = new GridData<Integer>(width, height, INVALID_INDEX);
+		this.tiles = new GridData<Tile>(width, height, null);
 		this.tileSet = tileSet;
 
 		for (int y = 0; y < height; y++)
 		{
 			for (int x = 0; x < width; x++)
 			{
+				tiles.setData(x, y, new Tile(this, x, y));
 				updateIndex(x, y);
 			}
 		}
@@ -125,7 +128,11 @@ public class TerrainModelDiamond
 	{
 		return indexData.getData(x, y);
 	}
-	
+
+	public Tile getTile(int x, int y)
+	{
+		return tiles.getData(x, y);
+	}
 
 	public int getWorldImageX(int x, int y) 
 	{

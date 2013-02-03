@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pack;
+package input;
 
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -24,11 +24,13 @@ import java.awt.event.MouseWheelEvent;
 
 import javax.swing.SwingUtilities;
 
+import pack.Viewport;
+
 /**
  * Converts mouse events to viewport changes
  * @author Isometric God
  */
-final class ViewportMouseAdapter extends MouseAdapter
+public final class ViewportMouseAdapter extends MouseAdapter
 {
 	private final Viewport view;
 
