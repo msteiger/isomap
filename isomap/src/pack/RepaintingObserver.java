@@ -17,39 +17,30 @@
 
 package pack;
 
+import java.awt.Component;
 import java.util.Observable;
+import java.util.Observer;
 
-public class Viewport extends Observable
+/**
+ * Triggers a repaint of the component
+ * if notified
+ * @author Isometric God
+ */
+final class RepaintingObserver implements Observer
 {
-	private int transX = 0;
-	private int transY = 0;
-	
-	public int worldXToScreenX(int worldX) 
+	private final Component component;
+
+	/**
+	 * @param component the component to repaint
+	 */
+	public RepaintingObserver(Component component)
 	{
-		return worldX - transX;
-	}
-	
-	public int worldYToScreenY(int worldY) 
-	{
-		return worldY - transY;
+		this.component = component;
 	}
 
-	public int screenXToWorldX(int screenX)
+	@Override
+	public void update(Observable o, Object arg)
 	{
-		return screenX + transX;
-	}
-
-	public int screenYToWorldY(int screenY)
-	{
-		return screenY + transY;
-	}
-
-	public void translate(int dx, int dy)
-	{
-		transX += dx;
-		transY += dy;
-		
-		setChanged();
-		notifyObservers();
+		component.repaint();
 	}
 }

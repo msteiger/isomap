@@ -127,16 +127,37 @@ public class TerrainModelDiamond
 	}
 	
 
-	public int getWorldX(int x, int y) 
+	public int getWorldImageX(int x, int y) 
 	{
-		return x * tileSet.getTileWidth() + (y % 2) * tileSet.getTileWidth() / 2 - tileSet.getOverlapX();
+		return getWorldX(x, y) - tileSet.getOverlapX();
+	}
+	
+	public int getWorldX(int x, int y)
+	{
+		return x * tileSet.getTileWidth() + (y % 2) * tileSet.getTileWidth() / 2;
 	}
 
 	public int getWorldY(int x, int y)
 	{
-		return y * tileSet.getTileHeight() / 2 - tileSet.getOverlapY();
+		return y * tileSet.getTileHeight() / 2;
+	}
+	
+	public int getWorldImageY(int x, int y)
+	{
+		return getWorldY(x, y) - tileSet.getOverlapY();
 	}
 
+	public int getMapX(int worldX, int worldY)
+	{
+		int y = getMapY(worldX, worldY);
+		return (worldX - (y % 2) * tileSet.getTileWidth() / 2) / tileSet.getTileWidth();
+	}
+
+	public int getMapY(int worldX, int worldY)
+	{
+		return (worldY * 2) / tileSet.getTileHeight();
+	}
+	
 	/**
 	 * @param x the x coord.
 	 * @param y the y coord.
@@ -196,6 +217,7 @@ public class TerrainModelDiamond
 
 		return UNDEFINED;
 	}
+
 
 	
 }
