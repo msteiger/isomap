@@ -22,6 +22,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
+import javax.swing.SwingUtilities;
+
 /**
  * Converts mouse events to viewport changes
  * @author Isometric God
@@ -43,7 +45,10 @@ final class ViewportMouseAdapter extends MouseAdapter
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
-		oldPt = e.getPoint();
+		if (SwingUtilities.isRightMouseButton(e))
+		{
+			oldPt = e.getPoint();
+		}
 	}
 
 	@Override
@@ -58,12 +63,21 @@ final class ViewportMouseAdapter extends MouseAdapter
 		if (oldPt == null)
 			return;
 
-		int dx = e.getX() - oldPt.x;
-		int dy = e.getY() - oldPt.y;
+		if (SwingUtilities.isRightMouseButton(e))
+		{
+			int dx = e.getX() - oldPt.x;
+			int dy = e.getY() - oldPt.y;
+	
+			oldPt.x = e.getX();
+			oldPt.y = e.getY();
+	
+			view.translate(-dx, -dy);
+		}
+	}
 
-		oldPt.x = e.getX();
-		oldPt.y = e.getY();
-
-		view.translate(-dx, -dy);
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e)
+	{
+		view.zoom(e.getWheelRotation(), e.getX(), e.getY());
 	}
 }
