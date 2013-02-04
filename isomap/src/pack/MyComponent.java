@@ -29,12 +29,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Set;
 
 import javax.swing.JComponent;
-
-import common.CollectionListener;
-import common.ObservableSet;
 
 import terrain.GridData;
 import terrain.TerrainLoader;
@@ -43,6 +39,9 @@ import terrain.TerrainType;
 import terrain.Tile;
 import tiles.TileSet;
 import tiles.TileSetBuilder;
+
+import common.CollectionListener;
+import common.ObservableSet;
 
 
 /**
@@ -106,6 +105,7 @@ public class MyComponent extends JComponent
 		super.paintComponent(g);
 
 		drawTileset(g);
+		drawHoveredTile(g);
 	}
 
 	/**
@@ -113,15 +113,38 @@ public class MyComponent extends JComponent
 	 */
 	private void drawTileset(Graphics g)
 	{
-		for (int y = 0; y < terrainModel.getMapHeight(); y++)
+		// convert screen to world coordinates
+		int worldX0 = view.screenXToWorldX(0);
+		int worldY0 = view.screenYToWorldY(0);
+		int worldX1 = view.screenXToWorldX(getWidth());
+		int worldY1 = view.screenYToWorldY(getHeight());
+
+		// TODO: this part is probably dependent on the TerrainModel, so convert it
+		int mapX0 = terrainModel.getMapX(worldX0, worldY0) - 1;
+		int mapY0 = terrainModel.getMapY(worldX0, worldY0) - 1;
+		int mapX1 = terrainModel.getMapX(worldX1, worldY1) + 1;
+		int mapY1 = terrainModel.getMapY(worldX1, worldY1);
+
+		// Restrict to map bounds
+		int minX = Math.max(mapX0, 0);
+		int minY = Math.max(mapY0, 0);
+		int maxX = Math.min(mapX1, terrainModel.getMapWidth() - 1);
+		int maxY = Math.min(mapY1, terrainModel.getMapHeight() - 1);
+
+//		System.out.println(minX + "-" + minY + "-" + maxX + "-" + maxY);
+
+		for (int y = minY; y <= maxY; y++)
 		{
-			for (int x = 0; x < terrainModel.getMapWidth(); x++)
+			for (int x = minX; x <= maxX; x++)
 			{
 				int source_index = terrainModel.getIndex(x, y);
 				drawTile(g, source_index, x, y);
 			}
 		}
-
+	}
+	
+	private void drawHoveredTile(Graphics g)
+	{
 		g.setFont(g.getFont().deriveFont(9.0f).deriveFont(Font.BOLD));
 		for (Tile t : hoveredTiles)
 		{
