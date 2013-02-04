@@ -124,7 +124,7 @@ public class TileSet
 				if (doesMatch(tig, pattern))
 					return tig.getIndices();
 			}
-		};
+		}
 
 		return Collections.singleton(1);
 	}

@@ -137,7 +137,7 @@ public class MyComponent extends JComponent
 		{
 			for (int x = minX; x <= maxX; x++)
 			{
-				int source_index = terrainModel.getIndex(x, y);
+				int source_index = terrainModel.getTile(x, y).getIndex();
 				drawTile(g, source_index, x, y);
 			}
 		}
@@ -201,7 +201,9 @@ public class MyComponent extends JComponent
 		{
 			for (int x = 0; x < terrainModel.getMapWidth(); x++)
 			{
-				if (terrainModel.getTerrain(x, y) == TerrainType.WATER)
+				Tile tile = terrainModel.getTile(x, y);
+				
+				if (tile.getTerrain() == TerrainType.WATER)
 				{
 					terrainModel.updateIndex(x, y);
 				}

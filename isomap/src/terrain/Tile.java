@@ -23,17 +23,18 @@ package terrain;
  */
 public class Tile
 {
-	private final TerrainModelDiamond terrainModel;
 	private final int x, y;
+	private Integer index;
+	private TerrainType terrain;
 	
 	/**
 	 * @param x the x-coordinate on the map
 	 * @param y the y-coordinate on the map
 	 * @param terrainModel the terrain model
 	 */
-	public Tile(TerrainModelDiamond terrainModel, int x, int y)
+	public Tile(int x, int y, TerrainType terrain)
 	{
-		this.terrainModel = terrainModel;
+		this.terrain = terrain;
 		this.x = x;
 		this.y = y;
 	}
@@ -46,5 +47,26 @@ public class Tile
 	public int getMapY()
 	{
 		return y;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getIndex()
+	{
+		return index;
+	}
+
+	/**
+	 * @return
+	 */
+	public TerrainType getTerrain()
+	{
+		return terrain;
+	}
+
+	public void setIndex(int index)
+	{
+		this.index = index;
 	}
 }

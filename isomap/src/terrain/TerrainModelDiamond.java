@@ -35,57 +35,46 @@ import dirs.OctDirection;
  */
 public class TerrainModelDiamond
 {
-	private static final Integer INVALID_INDEX = 0;
-
-	private final GridData<TerrainType> terrainData;
-	private final GridData<Integer> indexData;
 	private final GridData<Tile> tiles;
-	
+	private final Random r = new Random(12345);
+
 	private final TileSet tileSet;
 
-	private final Random r = new Random(12345);
+	private int mapWidth;
+	private int mapHeight;
+
 
 	/**
 	 * @param data the terrain data
 	 */
-	public TerrainModelDiamond(GridData<TerrainType> data, TileSet tileSet)
+	public TerrainModelDiamond(GridData<TerrainType> terrainData, TileSet tileSet)
 	{
-		int width = data.getWidth();
-		int height = data.getHeight();
+		mapWidth = terrainData.getWidth();
+		mapHeight = terrainData.getHeight();
 
-		this.terrainData = data;
-		this.indexData = new GridData<Integer>(width, height, INVALID_INDEX);
-		this.tiles = new GridData<Tile>(width, height, null);
+		this.tiles = new GridData<Tile>(mapWidth, mapHeight, null);
 		this.tileSet = tileSet;
 
-		for (int y = 0; y < height; y++)
+		for (int y = 0; y < mapHeight; y++)
 		{
-			for (int x = 0; x < width; x++)
+			for (int x = 0; x < mapWidth; x++)
 			{
-				tiles.setData(x, y, new Tile(this, x, y));
-				updateIndex(x, y);
+				TerrainType terrain = terrainData.getData(x, y);
+				Tile tile = new Tile(x, y, terrain);
+				tiles.setData(x, y, tile);
+			}
+		}
+		
+		for (int y = 0; y < mapHeight; y++)
+		{
+			for (int x = 0; x < mapWidth; x++)
+			{
+				int index = computeIndices(x, y).iterator().next();
+				tiles.getData(x, y).setIndex(index);
 			}
 		}
 	}
 
-	public void updateIndex(int x, int y) 
-	{
-		List<Integer> indices = new ArrayList<Integer>(computeIndices(x, y));
-
-		int oldIndex = getIndex(x, y);
-		
-		// exclude old index from the set of possible new indices
-		int rand = r.nextInt(indices.size() - 1) + 1;		
-
-		// oldPos can be -1 if the old index was not set before
-		int oldPos = indices.indexOf(oldIndex);
-		
-		// but rand is always in [1..size] so the sum is at least 0
-		Integer index = indices.get((oldPos + rand) % indices.size());
-		
-		indexData.setData(x, y, index);
-	}
-	
 	private static boolean isOdd(int v)
 	{
 		return v % 2 == 1;
@@ -96,7 +85,7 @@ public class TerrainModelDiamond
 	 */
 	public int getMapHeight()
 	{
-		return terrainData.getHeight();
+		return mapHeight;
 	}
 
 	/**
@@ -104,31 +93,10 @@ public class TerrainModelDiamond
 	 */
 	public int getMapWidth()
 	{
-		return terrainData.getWidth();
+		return mapWidth;
 	}	
 	
-	/**
-	 * @param x the x coord
-	 * @param y the y coord
-	 * @return the type or UNDEFINED if x or y are invalid
-	 */
-	public TerrainType getTerrain(int x, int y)
-	{
-		// x and y are often invalid map coords.
-		if (x < 0 || x >= getMapWidth())
-			return UNDEFINED;
 	
-		if (y < 0 || y >= getMapHeight())
-			return UNDEFINED;
-		
-		return terrainData.getData(x, y);
-	}
-	
-	public int getIndex(int x, int y)
-	{
-		return indexData.getData(x, y);
-	}
-
 	public Tile getTile(int x, int y)
 	{
 		return tiles.getData(x, y);
@@ -165,6 +133,23 @@ public class TerrainModelDiamond
 		return (worldY * 2) / tileSet.getTileHeight();
 	}
 	
+	public void updateIndex(int x, int y) 
+	{
+		int index = getTile(x, y).getIndex();
+		List<Integer> indices = new ArrayList<Integer>(computeIndices(x, y));
+
+		// exclude old index from the set of possible new indices
+		int rand = r.nextInt(indices.size() - 1) + 1;		
+
+		// oldPos can be -1 if the old index was not set before
+		int oldPos = indices.indexOf(index);
+		
+		// but rand is always in [1..size] so the sum is at least 0
+		index = indices.get((oldPos + rand) % indices.size());
+		
+		getTile(x, y).setIndex(index);
+	}
+
 	/**
 	 * @param x the x coord.
 	 * @param y the y coord.
@@ -186,7 +171,23 @@ public class TerrainModelDiamond
 		return tileSet.getIndicesFor(type, pattern);
 	}
 
+	/**
+	 * @param x the x coord
+	 * @param y the y coord
+	 * @return the type or UNDEFINED if x or y are invalid
+	 */
+	private TerrainType getTerrain(int x, int y)
+	{
+		// x and y are often invalid map coords.
+		if (x < 0 || x >= getMapWidth())
+			return UNDEFINED;
 	
+		if (y < 0 || y >= getMapHeight())
+			return UNDEFINED;
+		
+		return getTile(x,y).getTerrain();
+	}
+
 	private TerrainType getNeighborFor(int x, int y, OctDirection dir)
 	{
 		switch (dir)
