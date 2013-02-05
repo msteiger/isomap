@@ -5,6 +5,9 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>isomap</name>
   <description>Isometric Tile Map Model &amp; Viewer</description>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <dependencies>
 	<dependency>
 		<groupId>com.google.guava</groupId>
