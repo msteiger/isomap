@@ -124,13 +124,40 @@ public class TerrainModelDiamond
 
 	public int getMapX(int worldX, int worldY)
 	{
-		int y = getMapY(worldX, worldY);
-		return (worldX - (y % 2) * tileSet.getTileWidth() / 2) / tileSet.getTileWidth();
+		double w = tileSet.getTileWidth();
+		double h = tileSet.getTileHeight();
+
+		// Origin is at (0, h/2)
+		worldY -= h / 2; 
+
+		//     ( w/2 )        ( w/2 )
+		// r = (     )    c = (     ) 
+		//     ( h/2 )        (-h/2 )
+		
+		// x = r * w + c * w
+		// y = r * h - c * h
+		
+		// solving for r gives r = y/h + c
+		
+		// Math.floor() rounds negative values down whereas casting to int rounds them up
+		int r = (int) Math.floor(worldX / w + worldY / h); 
+		int c = (int) Math.floor(worldX / w - worldY / h);
+
+		// r and c are only one tile edge long
+		return (int)Math.floor((r + c) / 2.0);
 	}
 
 	public int getMapY(int worldX, int worldY)
 	{
-		return (worldY * 2) / tileSet.getTileHeight();
+		double w = tileSet.getTileWidth();
+		double h = tileSet.getTileHeight();
+		
+		worldY -= h / 2; 
+		
+		int r = (int) Math.floor(worldX / w + worldY / h); 
+		int c = (int) Math.floor(worldX / w - worldY / h);
+		
+		return r - c;
 	}
 	
 	public void updateIndex(int x, int y) 
