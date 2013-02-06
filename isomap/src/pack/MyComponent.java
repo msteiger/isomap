@@ -29,6 +29,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.JComponent;
 
@@ -114,32 +115,19 @@ public class MyComponent extends JComponent
 	private void drawTileset(Graphics g)
 	{
 		// convert screen to world coordinates
-//		int worldX0 = view.screenXToWorldX(0);
-//		int worldY0 = view.screenYToWorldY(0);
-//		int worldX1 = view.screenXToWorldX(getWidth());
-//		int worldY1 = view.screenYToWorldY(getHeight());
+		int worldX0 = view.screenXToWorldX(0);
+		int worldY0 = view.screenYToWorldY(0);
+		int worldX1 = view.screenXToWorldX(getWidth());
+		int worldY1 = view.screenYToWorldY(getHeight());
 
-		// TODO: this part is probably dependent on the TerrainModel, so convert it
-		int mapX0 = 0;//terrainModel.getMapX(worldX0, worldY0) - 1;
-		int mapY0 = 0;//terrainModel.getMapY(worldX0, worldY0) - 1;
-		int mapX1 = 100;//terrainModel.getMapX(worldX1, worldY1) + 1;
-		int mapY1 = 100;//terrainModel.getMapY(worldX1, worldY1);
+		List<Tile> visibleTiles = terrainModel.getTilesInRect(worldX0, worldY0, worldX1, worldY1);
 
-		// Restrict to map bounds
-		int minX = Math.max(mapX0, 0);
-		int minY = Math.max(mapY0, 0);
-		int maxX = Math.min(mapX1, terrainModel.getMapWidth() - 1);
-		int maxY = Math.min(mapY1, terrainModel.getMapHeight() - 1);
-
-//		System.out.println(minX + "-" + minY + "-" + maxX + "-" + maxY);
-
-		for (int y = minY; y <= maxY; y++)
+		// sort?
+		
+		for (Tile tile : visibleTiles)
 		{
-			for (int x = minX; x <= maxX; x++)
-			{
-				int source_index = terrainModel.getTile(x, y).getIndex();
-				drawTile(g, source_index, x, y);
-			}
+			int source_index = tile.getIndex();
+			drawTile(g, source_index, tile.getMapX(), tile.getMapY());
 		}
 	}
 	

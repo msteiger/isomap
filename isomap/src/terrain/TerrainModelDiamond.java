@@ -26,9 +26,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import tiles.TileSet;
+
 import com.google.common.base.Optional;
 
-import tiles.TileSet;
 import dirs.OctDirection;
 
 /**
@@ -159,6 +160,46 @@ public class TerrainModelDiamond
 		}
 		
 		return Optional.absent();
+	}
+
+	/**
+	 * @param worldX0
+	 * @param worldY0
+	 * @param worldX1
+	 * @param worldY1
+	 * @return
+	 */
+	public List<Tile> getTilesInRect(int worldX0, int worldY0, int worldX1, int worldY1)
+	{
+		int tileWidth = tileSet.getTileWidth();
+		int tileHeight = tileSet.getTileHeight();
+		
+		// this computes the map-y based on rectangular shapes 
+		// it is then independent of x - basically the inverse of getWorldY()
+		int y0 = (worldY0 * 2) / tileHeight - 1;
+		int y1 = (worldY1 * 2) / tileHeight;
+		
+		// Restrict to map bounds
+		int minY = Math.max(y0, 0);
+		int maxY = Math.min(y1, mapHeight - 1);
+
+		List<Tile> result = new ArrayList<Tile>();
+
+		for (int y = minY; y <= maxY; y++)
+		{
+			int x0 = (worldX0 - (y % 2) * tileWidth / 2) / tileWidth;
+			int x1 = (worldX1 - (y % 2) * tileWidth / 2) / tileWidth;
+
+			int minX = Math.max(x0, 0);
+			int maxX = Math.min(x1, mapWidth - 1);
+
+			for (int x = minX; x <= maxX; x++)
+			{
+				result.add(getTile(x, y));
+			}
+		}
+
+		return result;
 	}
 
 	public void updateIndex(int x, int y) 
