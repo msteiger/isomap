@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import com.google.common.base.Optional;
+
 import tiles.TileSet;
 import dirs.OctDirection;
 
@@ -122,7 +124,7 @@ public class TerrainModelDiamond
 		return getWorldY(x, y) - tileSet.getOverlapY();
 	}
 
-	public int getMapX(int worldX, int worldY)
+	public Optional<Tile> getTileAtWorldPos(int worldX, int worldY)
 	{
 		double w = tileSet.getTileWidth();
 		double h = tileSet.getTileHeight();
@@ -144,22 +146,21 @@ public class TerrainModelDiamond
 		int c = (int) Math.floor(worldX / w - worldY / h);
 
 		// r and c are only one tile edge long
-		return (int)Math.floor((r + c) / 2.0);
+		int x = (int)Math.floor((r + c) / 2.0);
+		
+		// r - c always >= 0
+		int y = r - c;
+		
+		if (x >= 0 && x < mapWidth &&
+			y >= 0 && y < mapHeight)
+
+		{
+			return Optional.of(getTile(x, y));
+		}
+		
+		return Optional.absent();
 	}
 
-	public int getMapY(int worldX, int worldY)
-	{
-		double w = tileSet.getTileWidth();
-		double h = tileSet.getTileHeight();
-		
-		worldY -= h / 2; 
-		
-		int r = (int) Math.floor(worldX / w + worldY / h); 
-		int c = (int) Math.floor(worldX / w - worldY / h);
-		
-		return r - c;
-	}
-	
 	public void updateIndex(int x, int y) 
 	{
 		int index = getTile(x, y).getIndex();

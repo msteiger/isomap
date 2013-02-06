@@ -21,6 +21,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.Set;
 
+import com.google.common.base.Optional;
+
 import pack.Viewport;
 
 import terrain.TerrainModelDiamond;
@@ -55,14 +57,11 @@ public class TilemapMouseAdapter implements MouseMotionListener
 		int worldX = view.screenXToWorldX(e.getX());
 		int worldY = view.screenYToWorldY(e.getY());
 		
-		int mapX = terrainModel.getMapX(worldX, worldY);
-		int mapY = terrainModel.getMapY(worldX, worldY);
-	
-		if (mapX >= 0 && mapX < terrainModel.getMapWidth() &&
-			mapY >= 0 && mapY < terrainModel.getMapHeight())
+		Optional<Tile> opTile = terrainModel.getTileAtWorldPos(worldX, worldY);
+
+		if (opTile.isPresent())
 		{
-			Tile tile = terrainModel.getTile(mapX, mapY);
-			selectionModel.add(tile);
+			selectionModel.add(opTile.get());
 		}
 	}
 	
