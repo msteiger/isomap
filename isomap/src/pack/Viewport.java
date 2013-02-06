@@ -59,6 +59,14 @@ public class Viewport extends Observable
 		notifyObservers();
 	}
 
+	/**
+	 * @return the zoom
+	 */
+	public double getZoom()
+	{
+		return zoom;
+	}
+
 	public void zoom(int dz, int screenX, int screenY)
 	{
 		int worldX = screenXToWorldX(screenX);

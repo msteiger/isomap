@@ -21,7 +21,7 @@ import input.TilemapMouseAdapter;
 import input.ViewportMouseAdapter;
 
 import java.awt.Color;
-import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
@@ -114,16 +114,16 @@ public class MyComponent extends JComponent
 	private void drawTileset(Graphics g)
 	{
 		// convert screen to world coordinates
-		int worldX0 = view.screenXToWorldX(0);
-		int worldY0 = view.screenYToWorldY(0);
-		int worldX1 = view.screenXToWorldX(getWidth());
-		int worldY1 = view.screenYToWorldY(getHeight());
+//		int worldX0 = view.screenXToWorldX(0);
+//		int worldY0 = view.screenYToWorldY(0);
+//		int worldX1 = view.screenXToWorldX(getWidth());
+//		int worldY1 = view.screenYToWorldY(getHeight());
 
 		// TODO: this part is probably dependent on the TerrainModel, so convert it
-		int mapX0 = terrainModel.getMapX(worldX0, worldY0) - 1;
-		int mapY0 = terrainModel.getMapY(worldX0, worldY0) - 1;
-		int mapX1 = terrainModel.getMapX(worldX1, worldY1) + 1;
-		int mapY1 = terrainModel.getMapY(worldX1, worldY1);
+		int mapX0 = 0;//terrainModel.getMapX(worldX0, worldY0) - 1;
+		int mapY0 = 0;//terrainModel.getMapY(worldX0, worldY0) - 1;
+		int mapX1 = 100;//terrainModel.getMapX(worldX1, worldY1) + 1;
+		int mapY1 = 100;//terrainModel.getMapY(worldX1, worldY1);
 
 		// Restrict to map bounds
 		int minX = Math.max(mapX0, 0);
@@ -145,24 +145,33 @@ public class MyComponent extends JComponent
 	
 	private void drawHoveredTile(Graphics g)
 	{
-		g.setFont(g.getFont().deriveFont(9.0f).deriveFont(Font.BOLD));
-		for (Tile t : hoveredTiles)
-		{
-			drawTile(g, 0, t.getMapX(), t.getMapY());
+		int imgWidth = tileset.getTileWidth();
+		int imgHeight = tileset.getTileHeight();
 
-			int mapX = t.getMapX();
-			int mapY = t.getMapY();
+		float size = (float) (9.0 * view.getZoom());
+		g.setFont(g.getFont().deriveFont(size));
+		for (Tile tile : hoveredTiles)
+		{
+			int mapX = tile.getMapX();
+			int mapY = tile.getMapY();
+
+			drawTile(g, 0, mapX, mapY);
 			
 			int worldX = terrainModel.getWorldX(mapX, mapY);
 			int worldY = terrainModel.getWorldY(mapX, mapY);
 
 			int dx1 = view.worldXToScreenX(worldX);
 			int dy1 = view.worldYToScreenY(worldY);
+			int dx2 = view.worldXToScreenX(worldX + imgWidth);
+			int dy2 = view.worldYToScreenY(worldY + imgHeight);
 
 			g.setColor(Color.WHITE);
+			FontMetrics fm = g.getFontMetrics();
+	
 			String str = String.format("%d / %d", mapX, mapY);
-			int tx = dx1 + 27 - (g.getFontMetrics().stringWidth(str)) / 2;
-			int ty = dy1 + 18;
+		
+			int tx = (dx2+dx1 - fm.stringWidth(str)) / 2;
+			int ty = (dy2+dy1 + fm.getAscent()) / 2;
 			g.drawString(str, tx, ty);
 		}
 
