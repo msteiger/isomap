@@ -57,15 +57,15 @@ public class TileSetBuilder
 		OutputStreamWriter writer = new OutputStreamWriter(fos, "UTF-8");
 		PrintWriter bw = new PrintWriter(writer);
 
-		bw.println("# Tileset Definition File");
-		bw.println("# ver. 0.1");
-		bw.println("image = data/tileset.png");
-		bw.println("tileWidth = " + ts.getTileWidth());
-		bw.println("tileHeight = " + ts.getTileHeight());
-		bw.println("tileImageWidth = " + ts.getTileImageWidth());
-		bw.println("tileImageWidth = " + ts.getTileImageWidth());
-		bw.println("tileOverlapX = " + ts.getOverlapX());
-		bw.println("tileOverlapY = " + ts.getOverlapY());
+//		bw.println("# Tileset Definition File");
+//		bw.println("# ver. 0.1");
+//		bw.println("image = data/tileset.png");
+//		bw.println("tileWidth = " + ts.getTileWidth());
+//		bw.println("tileHeight = " + ts.getTileHeight());
+//		bw.println("tileImageWidth = " + ts.getTileImageWidth());
+//		bw.println("tileImageWidth = " + ts.getTileImageWidth());
+//		bw.println("tileOverlapX = " + ts.getOverlapX());
+//		bw.println("tileOverlapY = " + ts.getOverlapY());
 
 		for (TileIndexGroup tig : ts.getIndexGroups())
 		{
@@ -84,8 +84,10 @@ public class TileSetBuilder
 		InputStreamReader reader = new InputStreamReader(is, "UTF-8");
 		BufferedReader bw = new BufferedReader(reader);
 
+		TileSet ts = new TileSet(54, 28);
+
 		BufferedImage image = ImageIO.read(new FileInputStream("data/tileset.png"));
-		TileSet ts = new TileSet(image);
+		ts.addImage(image, 0, 10, 0, 0);
 		
 		String line;
 		while ((line = bw.readLine()) != null)

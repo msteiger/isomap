@@ -18,9 +18,11 @@
 package tiles;
 
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,22 +36,30 @@ import dirs.OctDirection;
  */
 public class TileSet
 {
-	private BufferedImage image;
-	
-	private int tileWidth = 54;
-	private int tileHeight = 28;
+	private final int tileWidth;
+	private final int tileHeight;
 
-	private int tileImageWidth = 54;
-	private int tileImageHeight = 48;
-
-	private int overlapX = 0;
-	private int overlapY = 10;
-
+	private final Map<Integer, TileIndex> indices = new HashMap<>();
 	private final List<TileIndexGroup> tigs = new ArrayList<TileIndexGroup>();
 	
-	public TileSet(BufferedImage image)
+	
+	public TileSet(int tileWidth, int tileHeight)
 	{
-		this.image = image;
+		this.tileWidth = tileWidth;
+		this.tileHeight = tileHeight;
+	}
+	
+	public void addImage(BufferedImage img, int overlapLeft, int overlapTop, int overlapRight, int overlapBottom)
+	{
+		TileImage tileImage = new TileImage(img, tileWidth, tileHeight, overlapLeft, overlapTop, overlapRight, overlapBottom);
+		
+		int tileCount = tileImage.getTileCount();
+		int firstIndex = indices.size();
+		
+		for (int i = 0; i < tileCount; i++)
+		{
+			indices.put(i, new TileIndex(tileImage, i + firstIndex, i));
+		}
 	}
 	
 	public void defineTerrain(Set<Integer> set, TerrainType type, Map<OctDirection, TerrainType> borders)
@@ -57,52 +67,7 @@ public class TileSet
 		TileIndexGroup tig = getIndexGroup(type, borders);
 		
 		for (Integer idx : set)
-			tig.addIndex(idx);
-	}
-
-	private TileIndexGroup getIndexGroup(TerrainType type, Map<OctDirection, TerrainType> borders) 
-	{
-		for (TileIndexGroup tig : tigs)
-		{
-			if (tig.getTerrain() == type)
-			{
-				if (tig.getBorders().equals(borders))
-					return tig;
-			}
-		}
-		
-		TileIndexGroup tig = new TileIndexGroup(type, borders);
-		
-		tigs.add(tig);
-				
-		return tig;
-	}
-
-	public Image getImage(int tile_index)
-	{
-		return image;
-	}
-
-	public int getImageX(int tile_index)
-	{
-		int six = tile_index % 8;
-		return six * (tileImageWidth - overlapX);
-	}
-
-	public int getImageY(int tile_index)
-	{
-		int siy = tile_index / 8;
-		return siy * (tileImageHeight - overlapY);
-	}
-	
-	public int getTileImageWidth()
-	{
-		return tileImageWidth;
-	}
-	
-	public int getTileImageHeight()
-	{
-		return tileImageHeight;
+			tig.addIndex(indices.get(idx));
 	}
 
 	public int getTileWidth()
@@ -115,7 +80,7 @@ public class TileSet
 		return tileHeight;
 	}
 
-	public Set<Integer> getIndicesFor(TerrainType type, final Map<OctDirection, TerrainType> pattern)
+	public Set<TileIndex> getIndicesFor(TerrainType type, final Map<OctDirection, TerrainType> pattern)
 	{
 		for (TileIndexGroup tig : tigs)
 		{
@@ -126,7 +91,7 @@ public class TileSet
 			}
 		}
 
-		return Collections.singleton(1);
+		return Collections.emptySet();
 	}
 
 	/**
@@ -150,40 +115,34 @@ public class TileSet
 		return true;
 	}
 	
-	/**
-	 * @return the overlapX
-	 */
-	public int getOverlapX() 
-	{
-		return overlapX;
-	}
-
-	/**
-	 * @param overlapX the overlapX to set
-	 */
-	public void setOverlapX(int overlapX) 
-	{
-		this.overlapX = overlapX;
-	}
-
-	/**
-	 * @return the overlapY
-	 */
-	public int getOverlapY() 
-	{
-		return overlapY;
-	}
-
-	/**
-	 * @param overlapY the overlapY to set
-	 */
-	public void setOverlapY(int overlapY) 
-	{
-		this.overlapY = overlapY;
-	}
-
 	public List<TileIndexGroup> getIndexGroups() 
 	{
 		return Collections.unmodifiableList(tigs);
+	}
+
+	private TileIndexGroup getIndexGroup(TerrainType type, Map<OctDirection, TerrainType> borders) 
+	{
+		for (TileIndexGroup tig : tigs)
+		{
+			if (tig.getTerrain() == type)
+			{
+				if (tig.getBorders().equals(borders))
+					return tig;
+			}
+		}
+		
+		TileIndexGroup tig = new TileIndexGroup(type, borders);
+		
+		tigs.add(tig);
+				
+		return tig;
+	}
+
+	/**
+	 * @return
+	 */
+	public TileIndex getCursor()
+	{
+		return indices.get(0);
 	}
 }

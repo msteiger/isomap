@@ -15,60 +15,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package terrain;
-
-import tiles.TileIndex;
+package tiles;
 
 /**
  * TODO Type description
  * @author Martin Steiger
  */
-public class Tile
+public class TileIndex
 {
-	private final int x, y;
-	private TileIndex index;
-	private TerrainType terrain;
+	private final int globalIndex;
+	private final int localIndex;
+	private final TileImage tileImage;
 	
 	/**
-	 * @param x the x-coordinate on the map
-	 * @param y the y-coordinate on the map
-	 * @param terrainModel the terrain model
+	 * @param globalIndex
+	 * @param localIndex
+	 * @param tileImage
 	 */
-	public Tile(int x, int y, TerrainType terrain)
+	public TileIndex(TileImage tileImage, int globalIndex, int localIndex)
 	{
-		this.terrain = terrain;
-		this.x = x;
-		this.y = y;
+		this.globalIndex = globalIndex;
+		this.localIndex = localIndex;
+		this.tileImage = tileImage;
 	}
 	
-	public int getMapX()
+	/**
+	 * @return the globalIndex
+	 */
+	public int getGlobalIndex()
 	{
-		return x;
+		return globalIndex;
 	}
 	
-	public int getMapY()
-	{
-		return y;
-	}
-
 	/**
-	 * @return
+	 * @return the localIndex
 	 */
-	public TileIndex getIndex()
+	public int getLocalIndex()
 	{
-		return index;
+		return localIndex;
 	}
-
+	
 	/**
-	 * @return
+	 * @return the tileImage
 	 */
-	public TerrainType getTerrain()
+	public TileImage getTileImage()
 	{
-		return terrain;
+		return tileImage;
 	}
-
-	public void setIndex(TileIndex index)
-	{
-		this.index = index;
-	}
+	
 }

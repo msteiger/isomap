@@ -41,7 +41,7 @@ public class TileIndexGroup
 
 	private final TerrainType terrain;
 
-	private final Set<Integer> indices = new HashSet<Integer>();
+	private final Set<TileIndex> indices = new HashSet<TileIndex>();
 	
 	/**
 	 * @param tuple
@@ -68,7 +68,7 @@ public class TileIndexGroup
 	/**
 	 * @param idx
 	 */
-	public void addIndex(int idx)
+	public void addIndex(TileIndex idx)
 	{
 		indices.add(idx);
 	}
@@ -78,7 +78,7 @@ public class TileIndexGroup
 		return Collections.unmodifiableMap(map); 
 	}
 	
-	public Set<Integer> getIndices()
+	public Set<TileIndex> getIndices()
 	{
 		return Collections.unmodifiableSet(indices);
 	}

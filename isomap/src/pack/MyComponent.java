@@ -38,6 +38,8 @@ import terrain.TerrainLoader;
 import terrain.TerrainModelDiamond;
 import terrain.TerrainType;
 import terrain.Tile;
+import tiles.TileImage;
+import tiles.TileIndex;
 import tiles.TileSet;
 import tiles.TileSetBuilder;
 
@@ -126,7 +128,7 @@ public class MyComponent extends JComponent
 		
 		for (Tile tile : visibleTiles)
 		{
-			int source_index = tile.getIndex();
+			TileIndex source_index = tile.getIndex();
 			drawTile(g, source_index, tile.getMapX(), tile.getMapY());
 		}
 	}
@@ -143,7 +145,7 @@ public class MyComponent extends JComponent
 			int mapX = tile.getMapX();
 			int mapY = tile.getMapY();
 
-			drawTile(g, 0, mapX, mapY);
+			drawTile(g, tileset.getCursor(), mapX, mapY);
 			
 			int worldX = terrainModel.getWorldX(mapX, mapY);
 			int worldY = terrainModel.getWorldY(mapX, mapY);
@@ -165,27 +167,30 @@ public class MyComponent extends JComponent
 
 	}
 
-	private void drawTile(Graphics g, int tileIndex, int x, int y)
+	private void drawTile(Graphics g, TileIndex tileIndex, int x, int y)
 	{
-		int imgWidth = tileset.getTileImageWidth();
-		int imgHeight = tileset.getTileImageHeight();
+		TileImage img = tileIndex.getTileImage();
+		
+		int imgWidth = img.getTileImageWidth();
+		int imgHeight = img.getTileImageHeight();
 
-		Image image = tileset.getImage(tileIndex);
-
-		int sx1 = tileset.getImageX(tileIndex);
-		int sy1 = tileset.getImageY(tileIndex);
+		int sx1 = img.getImageX(tileIndex.getLocalIndex());
+		int sy1 = img.getImageY(tileIndex.getLocalIndex());
 		int sx2 = sx1 + imgWidth;
 		int sy2 = sy1 + imgHeight;
 		
-		int worldX = terrainModel.getWorldImageX(x, y);
-		int worldY = terrainModel.getWorldImageY(x, y);
+		int offX = img.getOverlapLeft();
+		int offY = img.getOverlapTop();
+
+		int worldX = terrainModel.getWorldX(x, y) - offX;
+		int worldY = terrainModel.getWorldY(x, y) - offY;
 
 		int dx1 = view.worldXToScreenX(worldX);
 		int dy1 = view.worldYToScreenY(worldY);
 		int dx2 = view.worldXToScreenX(worldX + imgWidth);
 		int dy2 = view.worldYToScreenY(worldY + imgHeight);
 
-		g.drawImage(image, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
+		g.drawImage(img.getImage(), dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
 	}
 
 	

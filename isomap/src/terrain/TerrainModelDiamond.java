@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import tiles.TileIndex;
 import tiles.TileSet;
 
 import com.google.common.base.Optional;
@@ -72,7 +73,7 @@ public class TerrainModelDiamond
 		{
 			for (int x = 0; x < mapWidth; x++)
 			{
-				int index = computeIndices(x, y).iterator().next();
+				TileIndex index = computeIndices(x, y).iterator().next();
 				tiles.getData(x, y).setIndex(index);
 			}
 		}
@@ -105,11 +106,6 @@ public class TerrainModelDiamond
 		return tiles.getData(x, y);
 	}
 
-	public int getWorldImageX(int x, int y) 
-	{
-		return getWorldX(x, y) - tileSet.getOverlapX();
-	}
-	
 	public int getWorldX(int x, int y)
 	{
 		return x * tileSet.getTileWidth() + (y % 2) * tileSet.getTileWidth() / 2;
@@ -120,11 +116,6 @@ public class TerrainModelDiamond
 		return y * tileSet.getTileHeight() / 2;
 	}
 	
-	public int getWorldImageY(int x, int y)
-	{
-		return getWorldY(x, y) - tileSet.getOverlapY();
-	}
-
 	public Optional<Tile> getTileAtWorldPos(int worldX, int worldY)
 	{
 		double w = tileSet.getTileWidth();
@@ -204,8 +195,8 @@ public class TerrainModelDiamond
 
 	public void updateIndex(int x, int y) 
 	{
-		int index = getTile(x, y).getIndex();
-		List<Integer> indices = new ArrayList<Integer>(computeIndices(x, y));
+		TileIndex index = getTile(x, y).getIndex();
+		List<TileIndex> indices = new ArrayList<TileIndex>(computeIndices(x, y));
 
 		// exclude old index from the set of possible new indices
 		int rand = r.nextInt(indices.size() - 1) + 1;		
@@ -224,7 +215,7 @@ public class TerrainModelDiamond
 	 * @param y the y coord.
 	 * @return the tile index
 	 */
-	public Set<Integer> computeIndices(int x, int y)
+	public Set<TileIndex> computeIndices(int x, int y)
 	{
 		TerrainType type = getTerrain(x, y);
 		Map<OctDirection, TerrainType> pattern = new HashMap<OctDirection, TerrainType>();
