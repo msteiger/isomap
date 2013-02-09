@@ -73,8 +73,7 @@ public class TerrainModelDiamond
 		{
 			for (int x = 0; x < mapWidth; x++)
 			{
-				TileIndex index = computeIndices(x, y).iterator().next();
-				tiles.getData(x, y).setIndex(index);
+				updateIndex(x, y);
 			}
 		}
 	}

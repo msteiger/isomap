@@ -23,7 +23,6 @@ import input.ViewportMouseAdapter;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -157,7 +156,7 @@ public class MyComponent extends JComponent
 
 			g.setColor(Color.WHITE);
 			FontMetrics fm = g.getFontMetrics();
-	
+			
 			String str = String.format("%d / %d", mapX, mapY);
 		
 			int tx = (dx2+dx1 - fm.stringWidth(str)) / 2;
@@ -174,8 +173,8 @@ public class MyComponent extends JComponent
 		int imgWidth = img.getTileImageWidth();
 		int imgHeight = img.getTileImageHeight();
 
-		int sx1 = img.getImageX(tileIndex.getLocalIndex());
-		int sy1 = img.getImageY(tileIndex.getLocalIndex());
+		int sx1 = img.getTileImageX(tileIndex);
+		int sy1 = img.getTileImageY(tileIndex);
 		int sx2 = sx1 + imgWidth;
 		int sy2 = sy1 + imgHeight;
 		

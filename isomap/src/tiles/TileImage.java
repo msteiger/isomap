@@ -82,15 +82,19 @@ public class TileImage
 		return image;
 	}
 
-	public int getImageX(int index)
+	public int getTileImageX(TileIndex index)
 	{
-		int six = index % getTilesPerCol();
+		checkValid(index);
+		
+		int six = index.getLocalIndex() % getTilesPerRow();
 		return six * getTileImageWidth();
 	}
 
-	public int getImageY(int tile_index)
+	public int getTileImageY(TileIndex index)
 	{
-		int siy = tile_index / getTilesPerCol();
+		checkValid(index);
+		
+		int siy = index.getLocalIndex() / getTilesPerRow();
 		return siy * getTileImageHeight();
 	}
 	
@@ -165,5 +169,18 @@ public class TileImage
 	public final int getTileHeight()
 	{
 		return tileHeight;
+	}
+
+	/**
+	 * @param index
+	 */
+	private void checkValid(TileIndex index)
+	{
+		if (index.getTileImage() != this)
+			throw new IllegalArgumentException("TileIndex " + index + " not part of TileImage " + this);
+		
+		if (index.getLocalIndex() >= getTileCount())
+			throw new IllegalArgumentException("TileIndex " + index + " contains invalid local index");
+		
 	}
 }
