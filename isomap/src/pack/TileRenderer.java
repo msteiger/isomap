@@ -24,6 +24,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import terrain.GridData;
@@ -33,6 +35,8 @@ import terrain.Tile;
 import tiles.TileImage;
 import tiles.TileIndex;
 import tiles.TileSet;
+
+import common.DefaultValueMap;
 
 /**
  * TODO Type description
@@ -47,7 +51,7 @@ public class TileRenderer
 	private GridData<Integer> animSteps;
 	private TileSet tileset;
 
-	private final static int maxSteps = 8;
+	private Map<TerrainType, Integer> maxSteps = new DefaultValueMap<>(0);
 
 	/**
 	 * @param terrainModel
@@ -59,18 +63,30 @@ public class TileRenderer
 		this.tileset = tileset;
 		this.view = view;
 
+		// TODO: put somewhere else
+		maxSteps.put(TerrainType.WATER, 8);
+		
 		int mapWidth = terrainModel.getMapWidth();
 		int mapHeight = terrainModel.getMapHeight();
 		oldIndices = new GridData<TileIndex>(mapWidth, mapHeight, null);
 		animSteps = new GridData<Integer>(mapWidth, mapHeight, 0);
 		
+		Random rand = new Random(1235);
+		
 		for (int y = 0; y < terrainModel.getMapHeight(); y++)
 		{
 			for (int x = 0; x < terrainModel.getMapWidth(); x++)
 			{
-				oldIndices.setData(x, y, terrainModel.getTile(x, y).getIndex());
-				terrainModel.updateIndex(x, y);
-				animSteps.setData(x, y, (int) (Math.random() * maxSteps));
+				Tile tile = terrainModel.getTile(x, y);
+				
+				oldIndices.setData(x, y, tile.getIndex());
+				Integer steps = maxSteps.get(tile.getTerrain());
+				
+				if (steps > 0)
+				{
+					animSteps.setData(x, y, rand.nextInt(steps));
+					terrainModel.updateIndex(x, y);
+				}
 			}
 		}
 	}
@@ -102,11 +118,17 @@ public class TileRenderer
 			{
 				drawTile(g, oldIndex, mapX, mapY);
 	
-	//			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-	
-				float alpha = (float)animSteps.getData(mapX, mapY) / maxSteps;
+				Integer step = animSteps.getData(mapX, mapY);
+				Integer maxStep = maxSteps.get(tile.getTerrain());
+				
+				float alpha = (float)step / maxStep;
+				
 				Composite oldComp = g.getComposite();
-				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+				
+				// TODO: Cache alpha composite
+				AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+				
+				g.setComposite(ac);
 				drawTile(g, newIndex, mapX, mapY);
 				g.setComposite(oldComp);
 			}
@@ -187,13 +209,14 @@ public class TileRenderer
 			for (int x = 0; x < terrainModel.getMapWidth(); x++)
 			{
 				Tile tile = terrainModel.getTile(x, y);
+				Integer maxStep = maxSteps.get(tile.getTerrain());
 
-				if (tile.getTerrain() == TerrainType.WATER)
+				if (maxStep > 0)
 				{
 					Integer step = animSteps.getData(x, y);
 					int nextStep = step + 1;
 
-					if (nextStep >= maxSteps)
+					if (nextStep >= maxStep)
 					{
 						nextStep = 0;
 						
