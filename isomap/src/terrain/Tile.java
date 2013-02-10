@@ -17,7 +17,6 @@
 
 package terrain;
 
-import tiles.TileIndex;
 
 /**
  * TODO Type description
@@ -26,7 +25,6 @@ import tiles.TileIndex;
 public class Tile
 {
 	private final int x, y;
-	private TileIndex index;
 	private TerrainType terrain;
 	
 	/**
@@ -54,21 +52,9 @@ public class Tile
 	/**
 	 * @return
 	 */
-	public TileIndex getIndex()
-	{
-		return index;
-	}
-
-	/**
-	 * @return
-	 */
 	public TerrainType getTerrain()
 	{
 		return terrain;
 	}
 
-	public void setIndex(TileIndex index)
-	{
-		this.index = index;
-	}
 }

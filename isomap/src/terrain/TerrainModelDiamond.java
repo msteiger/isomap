@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import tiles.TileIndex;
@@ -40,7 +39,6 @@ import dirs.OctDirection;
 public class TerrainModelDiamond
 {
 	private final GridData<Tile> tiles;
-	private final Random r = new Random(12345);
 
 	private final TileSet tileSet;
 
@@ -69,13 +67,6 @@ public class TerrainModelDiamond
 			}
 		}
 		
-		for (int y = 0; y < mapHeight; y++)
-		{
-			for (int x = 0; x < mapWidth; x++)
-			{
-				updateIndex(x, y);
-			}
-		}
 	}
 
 	private static boolean isOdd(int v)
@@ -191,24 +182,7 @@ public class TerrainModelDiamond
 
 		return result;
 	}
-
-	public void updateIndex(int x, int y) 
-	{
-		TileIndex index = getTile(x, y).getIndex();
-		List<TileIndex> indices = new ArrayList<TileIndex>(computeIndices(x, y));
-
-		// exclude old index from the set of possible new indices
-		int rand = r.nextInt(indices.size() - 1) + 1;		
-
-		// oldPos can be -1 if the old index was not set before
-		int oldPos = indices.indexOf(index);
-		
-		// but rand is always in [1..size] so the sum is at least 0
-		index = indices.get((oldPos + rand) % indices.size());
-		
-		getTile(x, y).setIndex(index);
-	}
-
+ 
 	/**
 	 * @param x the x coord.
 	 * @param y the y coord.

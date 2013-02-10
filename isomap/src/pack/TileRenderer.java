@@ -23,6 +23,7 @@ import java.awt.Composite;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -48,8 +49,11 @@ public class TileRenderer
 	private TerrainModelDiamond terrainModel;
 	
 	private GridData<TileIndex> oldIndices;
+	private GridData<TileIndex> newIndices;
 	private GridData<Integer> animSteps;
 	private TileSet tileset;
+
+	private final Random random = new Random(12345);
 
 	private Map<TerrainType, Integer> maxSteps = new DefaultValueMap<>(0);
 
@@ -68,10 +72,10 @@ public class TileRenderer
 		
 		int mapWidth = terrainModel.getMapWidth();
 		int mapHeight = terrainModel.getMapHeight();
-		oldIndices = new GridData<TileIndex>(mapWidth, mapHeight, null);
-		animSteps = new GridData<Integer>(mapWidth, mapHeight, 0);
 		
-		Random rand = new Random(1235);
+		oldIndices = new GridData<TileIndex>(mapWidth, mapHeight, null);
+		newIndices = new GridData<TileIndex>(mapWidth, mapHeight, null);
+		animSteps = new GridData<Integer>(mapWidth, mapHeight, 0);
 		
 		for (int y = 0; y < terrainModel.getMapHeight(); y++)
 		{
@@ -79,18 +83,55 @@ public class TileRenderer
 			{
 				Tile tile = terrainModel.getTile(x, y);
 				
-				oldIndices.setData(x, y, tile.getIndex());
+				updateIndex(x, y);
+				
+				oldIndices.setData(x, y, newIndices.getData(x, y));
 				Integer steps = maxSteps.get(tile.getTerrain());
 				
 				if (steps > 0)
 				{
-					animSteps.setData(x, y, rand.nextInt(steps));
-					terrainModel.updateIndex(x, y);
+					animSteps.setData(x, y, random.nextInt(steps));
+					updateIndex(x, y);
 				}
 			}
 		}
 	}
 	
+
+	public void updateIndex(int mapX, int mapY) 
+	{
+		TileIndex index = newIndices.getData(mapX, mapY);
+		
+		Set<TileIndex> indices = terrainModel.computeIndices(mapX, mapY);
+		if (indices.isEmpty())
+			return;
+
+		index = getRandomOtherThan(indices, index);
+		
+		newIndices.setData(mapX, mapY, index);
+	}
+	
+	/**
+	 * @param indices
+	 * @param index
+	 */
+	private TileIndex getRandomOtherThan(Set<TileIndex> indices, TileIndex index)
+	{
+		List<TileIndex> list = new ArrayList<TileIndex>(indices);
+		
+		// exclude old index from the set of possible new indices
+		int rand = random.nextInt(list.size() - 1) + 1;		
+
+		// oldPos can be -1 if the old index was not set before
+		int oldPos = list.indexOf(index);
+		
+		// but rand is always in [1..size] so the sum is at least 0
+		index = list.get((oldPos + rand) % list.size());
+		
+		return index;
+	}
+
+
 	/**
 	 * @param g
 	 */
@@ -112,7 +153,7 @@ public class TileRenderer
 			int mapX = tile.getMapX();
 
 			TileIndex oldIndex = oldIndices.getData(mapX, mapY); 
-			TileIndex newIndex = tile.getIndex();
+			TileIndex newIndex = newIndices.getData(mapX, mapY);
 
 			if (oldIndex != null && oldIndex != newIndex)
 			{
@@ -177,6 +218,7 @@ public class TileRenderer
 	{
 		TileImage img = tileIndex.getTileImage();
 		
+		
 		int imgWidth = img.getTileImageWidth();
 		int imgHeight = img.getTileImageHeight();
 
@@ -220,8 +262,9 @@ public class TileRenderer
 					{
 						nextStep = 0;
 						
-						oldIndices.setData(x, y, tile.getIndex());
-						terrainModel.updateIndex(x, y);
+						TileIndex index = newIndices.getData(x, y);
+						oldIndices.setData(x, y, index);
+						updateIndex(x, y);
 					}
 
 					animSteps.setData(x, y, Integer.valueOf(nextStep));
