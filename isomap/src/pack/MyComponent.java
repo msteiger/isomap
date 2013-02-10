@@ -20,9 +20,12 @@ package pack;
 import input.TilemapMouseAdapter;
 import input.ViewportMouseAdapter;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -58,6 +61,10 @@ public class MyComponent extends JComponent
 	private TileSet tileset;
 	private Viewport view = new Viewport();
 	private ObservableSet<Tile> hoveredTiles = new ObservableSet<Tile>(new HashSet<Tile>()); 
+	private GridData<TileIndex> oldIndices;
+	private GridData<Integer> animSteps;
+
+	private final static int maxSteps = 8;
 	
 	/**
 	 * 
@@ -72,6 +79,24 @@ public class MyComponent extends JComponent
 		tileset = tileSetBuilder.readFromStream(new FileInputStream("data/treasurefleet.tsd"));
 
 		terrainModel = new TerrainModelDiamond(terrainData, tileset);
+		
+		
+		int mapWidth = terrainModel.getMapWidth();
+		int mapHeight = terrainModel.getMapHeight();
+		oldIndices = new GridData<TileIndex>(mapWidth, mapHeight, null);
+		animSteps = new GridData<Integer>(mapWidth, mapHeight, 0);
+		
+		for (int y = 0; y < terrainModel.getMapHeight(); y++)
+		{
+			for (int x = 0; x < terrainModel.getMapWidth(); x++)
+			{
+				oldIndices.setData(x, y, terrainModel.getTile(x, y).getIndex());
+				terrainModel.updateIndex(x, y);
+				animSteps.setData(x, y, (int) (Math.random() * maxSteps));
+			}
+		}
+		
+		animate();
 		
 		MouseAdapter ma = new ViewportMouseAdapter(view);
 		view.addObserver(new RepaintingObserver(this));
@@ -106,14 +131,15 @@ public class MyComponent extends JComponent
 	{
 		super.paintComponent(g);
 
-		drawTileset(g);
-		drawHoveredTile(g);
+		Graphics2D g2d = (Graphics2D) g;
+		drawTileset(g2d);
+		drawHoveredTile(g2d);
 	}
 
 	/**
 	 * @param g
 	 */
-	private void drawTileset(Graphics g)
+	private void drawTileset(Graphics2D g)
 	{
 		// convert screen to world coordinates
 		int worldX0 = view.screenXToWorldX(0);
@@ -127,12 +153,32 @@ public class MyComponent extends JComponent
 		
 		for (Tile tile : visibleTiles)
 		{
-			TileIndex source_index = tile.getIndex();
-			drawTile(g, source_index, tile.getMapX(), tile.getMapY());
+			int mapY = tile.getMapY();
+			int mapX = tile.getMapX();
+
+			TileIndex oldIndex = oldIndices.getData(mapX, mapY); 
+			TileIndex newIndex = tile.getIndex();
+
+			if (oldIndex != null && oldIndex != newIndex)
+			{
+				drawTile(g, oldIndex, mapX, mapY);
+	
+	//			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+	
+				float alpha = (float)animSteps.getData(mapX, mapY) / maxSteps;
+				Composite oldComp = g.getComposite();
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+				drawTile(g, newIndex, mapX, mapY);
+				g.setComposite(oldComp);
+			}
+			else
+			{
+				drawTile(g, newIndex, mapX, mapY);
+			}
 		}
 	}
 	
-	private void drawHoveredTile(Graphics g)
+	private void drawHoveredTile(Graphics2D g)
 	{
 		int imgWidth = tileset.getTileWidth();
 		int imgHeight = tileset.getTileHeight();
@@ -166,7 +212,7 @@ public class MyComponent extends JComponent
 
 	}
 
-	private void drawTile(Graphics g, TileIndex tileIndex, int x, int y)
+	private void drawTile(Graphics2D g, TileIndex tileIndex, int x, int y)
 	{
 		TileImage img = tileIndex.getTileImage();
 		
@@ -192,7 +238,6 @@ public class MyComponent extends JComponent
 		g.drawImage(img.getImage(), dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
 	}
 
-	
 	/**
 	 * 
 	 */
@@ -203,14 +248,25 @@ public class MyComponent extends JComponent
 			for (int x = 0; x < terrainModel.getMapWidth(); x++)
 			{
 				Tile tile = terrainModel.getTile(x, y);
-				
+
 				if (tile.getTerrain() == TerrainType.WATER)
 				{
-					terrainModel.updateIndex(x, y);
+					Integer step = animSteps.getData(x, y);
+					int nextStep = step + 1;
+
+					if (nextStep >= maxSteps)
+					{
+						nextStep = 0;
+						
+						oldIndices.setData(x, y, tile.getIndex());
+						terrainModel.updateIndex(x, y);
+					}
+
+					animSteps.setData(x, y, Integer.valueOf(nextStep));
 				}
 			}
 		}
-
+		
 		repaint();
 	}
 

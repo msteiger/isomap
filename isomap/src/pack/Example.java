@@ -38,7 +38,7 @@ public class Example
 	{
 		final MyComponent comp = new MyComponent();
 
-		Timer timer = new Timer(333, new ActionListener()
+		Timer timer = new Timer(100, new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
