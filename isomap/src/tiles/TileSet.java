@@ -145,4 +145,12 @@ public class TileSet
 	{
 		return indices.get(0);
 	}
+
+	/**
+	 * @return
+	 */
+	public TileIndex getInvalidTileIndex()
+	{
+		return indices.get(33 * 8);
+	}
 }

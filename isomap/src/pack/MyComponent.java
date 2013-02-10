@@ -19,6 +19,7 @@ package pack;
 
 import input.TilemapMouseAdapter;
 import input.ViewportMouseAdapter;
+import io.TerrainLoader;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -31,7 +32,6 @@ import java.util.HashSet;
 import javax.swing.JComponent;
 
 import terrain.GridData;
-import terrain.TerrainLoader;
 import terrain.TerrainModelDiamond;
 import terrain.TerrainType;
 import terrain.Tile;

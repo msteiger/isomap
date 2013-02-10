@@ -73,8 +73,10 @@ public class TileRenderer
 		int mapWidth = terrainModel.getMapWidth();
 		int mapHeight = terrainModel.getMapHeight();
 		
-		oldIndices = new GridData<TileIndex>(mapWidth, mapHeight, null);
-		newIndices = new GridData<TileIndex>(mapWidth, mapHeight, null);
+		TileIndex invalidTile = tileset.getInvalidTileIndex();
+		
+		oldIndices = new GridData<TileIndex>(mapWidth, mapHeight, invalidTile);
+		newIndices = new GridData<TileIndex>(mapWidth, mapHeight, invalidTile);
 		animSteps = new GridData<Integer>(mapWidth, mapHeight, 0);
 		
 		for (int y = 0; y < terrainModel.getMapHeight(); y++)
