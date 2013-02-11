@@ -20,6 +20,7 @@ package terrain;
 public enum TerrainType
 {
 	UNDEFINED,
+	EMPTY,
 	WATER,
 	SAND,
 	FOREST,

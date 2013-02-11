@@ -194,7 +194,7 @@ public class TileRenderer
 			int mapX = tile.getMapX();
 			int mapY = tile.getMapY();
 
-			drawTile(g, tileset.getCursor(), mapX, mapY);
+			drawTile(g, tileset.getCursorTileIndex(), mapX, mapY);
 			
 			int worldX = terrainModel.getWorldX(mapX, mapY);
 			int worldY = terrainModel.getWorldY(mapX, mapY);

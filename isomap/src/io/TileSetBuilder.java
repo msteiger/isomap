@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package tiles;
+package io;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -34,6 +34,8 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 
 import terrain.TerrainType;
+import tiles.TileIndexGroup;
+import tiles.TileSet;
 import dirs.OctDirection;
 
 
@@ -88,6 +90,8 @@ public class TileSetBuilder
 
 		BufferedImage image = ImageIO.read(new FileInputStream("data/tileset.png"));
 		ts.addImage(image, 0, 10, 0, 0);
+		ts.setCursorTileIndex(0);
+		ts.setInvalidTileIndex(33 * 8);
 		
 		String line;
 		while ((line = bw.readLine()) != null)

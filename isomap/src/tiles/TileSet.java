@@ -41,6 +41,9 @@ public class TileSet
 
 	private final Map<Integer, TileIndex> indices = new HashMap<>();
 	private final List<TileIndexGroup> tigs = new ArrayList<TileIndexGroup>();
+
+	private TileIndex cursorTileIndex;
+	private TileIndex invalidTileIndex;
 	
 	
 	public TileSet(int tileWidth, int tileHeight)
@@ -141,9 +144,9 @@ public class TileSet
 	/**
 	 * @return
 	 */
-	public TileIndex getCursor()
+	public TileIndex getCursorTileIndex()
 	{
-		return indices.get(0);
+		return cursorTileIndex;
 	}
 
 	/**
@@ -151,6 +154,16 @@ public class TileSet
 	 */
 	public TileIndex getInvalidTileIndex()
 	{
-		return indices.get(33 * 8);
+		return invalidTileIndex;
+	}
+	
+	public void setCursorTileIndex(int idx)
+	{
+		cursorTileIndex = indices.get(idx);
+	}
+	
+	public void setInvalidTileIndex(int idx)
+	{
+		invalidTileIndex = indices.get(idx);
 	}
 }
