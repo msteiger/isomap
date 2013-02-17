@@ -17,7 +17,6 @@
 
 package tiles;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +37,7 @@ public class TileSet
 	private final int tileWidth;
 	private final int tileHeight;
 
+	private final Map<TileIndex, TileImage> images = new HashMap<>();
 	private final Map<Integer, TileIndex> indices = new HashMap<>();
 	private final List<TileIndexGroup> tigs = new ArrayList<TileIndexGroup>();
 
@@ -60,10 +60,21 @@ public class TileSet
 		
 		for (int i = 0; i < tileCount; i++)
 		{
-			indices.put(i, new TileIndex(tileImage, i + firstIndex, i));
+			TileIndex index = new TileIndex(i + firstIndex, i);
+			indices.put(i, index);
+			images.put(index, tileImage);
 		}
 	}
-	
+
+	/**
+	 * @param tileIndex
+	 * @return
+	 */
+	public TileImage getTileImage(TileIndex tileIndex)
+	{
+		return images.get(tileIndex);
+	}
+
 	public void defineTerrain(Set<Integer> set, TerrainType type, Map<OctDirection, TerrainType> borders)
 	{
 		TileIndexGroup tig = getIndexGroup(type, borders);

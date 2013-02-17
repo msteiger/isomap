@@ -230,8 +230,7 @@ public class TileRenderer
 
 	public void drawTile(Graphics2D g, TileIndex tileIndex, int x, int y)
 	{
-		TileImage img = tileIndex.getTileImage();
-		
+		TileImage img = tileset.getTileImage(tileIndex);
 		
 		int imgWidth = img.getTileImageWidth();
 		int imgHeight = img.getTileImageHeight();

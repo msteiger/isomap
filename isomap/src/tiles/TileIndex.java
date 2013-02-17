@@ -25,18 +25,16 @@ public class TileIndex
 {
 	private final int globalIndex;
 	private final int localIndex;
-	private final TileImage tileImage;
 	
 	/**
 	 * @param globalIndex
 	 * @param localIndex
 	 * @param tileImage
 	 */
-	public TileIndex(TileImage tileImage, int globalIndex, int localIndex)
+	public TileIndex(int globalIndex, int localIndex)
 	{
 		this.globalIndex = globalIndex;
 		this.localIndex = localIndex;
-		this.tileImage = tileImage;
 	}
 	
 	/**
@@ -53,14 +51,6 @@ public class TileIndex
 	public int getLocalIndex()
 	{
 		return localIndex;
-	}
-	
-	/**
-	 * @return the tileImage
-	 */
-	public TileImage getTileImage()
-	{
-		return tileImage;
 	}
 	
 }

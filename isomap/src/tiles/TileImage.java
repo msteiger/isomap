@@ -21,7 +21,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -206,9 +205,6 @@ public class TileImage
 	 */
 	private void checkValid(TileIndex index)
 	{
-		if (index.getTileImage() != this)
-			throw new IllegalArgumentException("TileIndex " + index + " not part of TileImage " + this);
-		
 		if (index.getLocalIndex() >= getTileCount())
 			throw new IllegalArgumentException("TileIndex " + index + " contains invalid local index");
 		
