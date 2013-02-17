@@ -23,9 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import tiles.TileIndex;
 import tiles.TileSet;
 
 import com.google.common.base.Optional;

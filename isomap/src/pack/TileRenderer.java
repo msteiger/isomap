@@ -35,6 +35,7 @@ import terrain.TerrainType;
 import terrain.Tile;
 import tiles.TileImage;
 import tiles.TileIndex;
+import tiles.TileIndexResolver;
 import tiles.TileSet;
 
 import common.DefaultValueMap;
@@ -47,11 +48,12 @@ public class TileRenderer
 {
 	private Viewport view;
 	private TerrainModelDiamond terrainModel;
+	private TileSet tileset;
+	private TileIndexResolver indexResolver;
 	
 	private GridData<TileIndex> oldIndices;
 	private GridData<TileIndex> newIndices;
 	private GridData<Integer> animSteps;
-	private TileSet tileset;
 
 	private final Random random = new Random(12345);
 
@@ -66,6 +68,7 @@ public class TileRenderer
 		this.terrainModel = terrainModel;
 		this.tileset = tileset;
 		this.view = view;
+		this.indexResolver = new TileIndexResolver(tileset);
 
 		// TODO: put somewhere else
 		maxSteps.put(TerrainType.WATER, 8);
@@ -105,7 +108,7 @@ public class TileRenderer
 		TileIndex index = newIndices.getData(mapX, mapY);
 		
 		TerrainType terrain = terrainModel.getTile(mapX, mapY).getTerrain();
-		Set<TileIndex> indices = tileset.getIndicesFor(terrain, terrainModel.getNeighbors(mapX, mapY));
+		Set<TileIndex> indices = indexResolver.getIndicesFor(terrain, terrainModel.getNeighbors(mapX, mapY));
 		
 		if (indices.isEmpty())
 			return;
@@ -182,7 +185,7 @@ public class TileRenderer
 				drawTile(g, newIndex, mapX, mapY);
 			}
 			
-			Set<TileIndex> indices = tileset.getOverlaysFor(tile.getTerrain(), terrainModel.getNeighbors(mapX, mapY));
+			Set<TileIndex> indices = indexResolver.getOverlaysFor(tile.getTerrain(), terrainModel.getNeighbors(mapX, mapY));
 			
 			for (TileIndex overlay : indices)
 			{

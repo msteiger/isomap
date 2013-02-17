@@ -21,7 +21,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -82,115 +81,6 @@ public class TileSet
 		return tileHeight;
 	}
 
-	public Set<TileIndex> getOverlaysFor(TerrainType type, Map<OctDirection, TerrainType> pattern)
-	{
-		Set<TileIndex> set = new HashSet<>();
-		
-//		Set<TerrainType> differentTypes = new HashSet<>(pattern.values());	// reduce collection to set -> remove duplicates 
-		
-		for (TileIndexGroup tig : tigs)
-		{
-			if (tig.getTerrain() == TerrainType.EMPTY)
-			{
-				if (isOverlayOk(type, pattern, tig))
-					return tig.getIndices();
-			}
-		}
-		
-		return set;
-	}
-
-	/**
-	 * @param type
-	 * @param pattern
-	 * @param tig
-	 */
-	private boolean isOverlayOk(TerrainType type, Map<OctDirection, TerrainType> pattern, TileIndexGroup tig)
-	{
-		if (type != TerrainType.SAND)
-			return false;
-	
-		for (OctDirection dir : pattern.keySet())
-		{
-			TerrainType border = tig.getBorder(dir);
-
-			if (border == TerrainType.UNDEFINED)
-				continue;
-
-			if (border == TerrainType.EMPTY && type == pattern.get(dir))
-				continue;
-			
-			if (border != pattern.get(dir))
-				return false;
-		}
-
-		return true;
-	}
-	
-	public Set<TileIndex> getIndicesFor(TerrainType type, Map<OctDirection, TerrainType> pattern)
-	{
-		for (TileIndexGroup tig : tigs)
-		{
-			if (tig.getTerrain() == type)
-			{
-				if (doesMatch(tig, pattern))
-					return tig.getIndices();
-			}
-		}
-
-		for (TileIndexGroup tig : tigs)
-		{
-			if (isDefault(tig, type))
-				return tig.getIndices();
-		}
-		
-		return Collections.emptySet();
-	}
-
-	/**
-	 * @param type
-	 * @return
-	 */
-	private boolean isDefault(TileIndexGroup supp, TerrainType type)
-	{
-		if (supp.getTerrain() != type)
-			return false;
-
-		for (OctDirection dir : OctDirection.values())
-		{
-			TerrainType ava = supp.getBorder(dir);
-
-			if (ava == TerrainType.UNDEFINED)
-				continue;
-
-			if (type != ava)
-				return false;
-		}
-		
-		return true;
-	}
-
-	/**
-	 * @param needPattern
-	 * @param tilePattern
-	 * @return
-	 */
-	private boolean doesMatch(TileIndexGroup supp, Map<OctDirection, TerrainType> needed)
-	{
-		for (OctDirection dir : needed.keySet())
-		{
-			TerrainType ava = supp.getBorder(dir);
-			
-			if (ava == TerrainType.UNDEFINED)
-				continue;
-			
-			if (ava != needed.get(dir)) 
-				return false;
-		}
-		
-		return true;
-	}
-	
 	public List<TileIndexGroup> getIndexGroups() 
 	{
 		return Collections.unmodifiableList(tigs);
