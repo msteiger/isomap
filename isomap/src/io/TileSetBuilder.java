@@ -19,6 +19,7 @@ package io;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,8 +89,7 @@ public class TileSetBuilder
 
 		TileSet ts = new TileSet(54, 28);
 
-		BufferedImage image = ImageIO.read(new FileInputStream("data/tileset.png"));
-		ts.addImage(image, 0, 10, 0, 0);
+		ts.addImage(new File("data/tileset.png"), 0, 10, 0, 0);
 		ts.setCursorTileIndex(0);
 		ts.setInvalidTileIndex(33 * 8);
 		

@@ -18,6 +18,7 @@
 package tiles;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ public class TileSet
 		this.tileHeight = tileHeight;
 	}
 	
-	public void addImage(BufferedImage img, int overlapLeft, int overlapTop, int overlapRight, int overlapBottom)
+	public void addImage(File img, int overlapLeft, int overlapTop, int overlapRight, int overlapBottom)
 	{
 		TileImage tileImage = new TileImage(img, tileWidth, tileHeight, overlapLeft, overlapTop, overlapRight, overlapBottom);
 		
