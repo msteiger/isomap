@@ -160,11 +160,14 @@ public class TileSetBuilder
 					int start = parts[2].indexOf('{') + 1;
 					int end = parts[2].indexOf('}');
 					String[] idxList = parts[2].substring(start, end).split(","); 
-				
+					
 					for (String p : idxList)
 					{
 						String[] kvp = p.split("=");
-						dirMap.put(OctDirection.valueOf(kvp[0].trim()), TerrainType.valueOf(kvp[1].trim()));
+						if (kvp.length == 2)
+						{
+							dirMap.put(OctDirection.valueOf(kvp[0].trim()), TerrainType.valueOf(kvp[1].trim()));
+						}
 					}
 				}
 				

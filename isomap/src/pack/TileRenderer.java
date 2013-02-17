@@ -104,7 +104,9 @@ public class TileRenderer
 	{
 		TileIndex index = newIndices.getData(mapX, mapY);
 		
-		Set<TileIndex> indices = terrainModel.computeIndices(mapX, mapY);
+		TerrainType terrain = terrainModel.getTile(mapX, mapY).getTerrain();
+		Set<TileIndex> indices = tileset.getIndicesFor(terrain, terrainModel.getNeighbors(mapX, mapY));
+		
 		if (indices.isEmpty())
 			return;
 
@@ -178,6 +180,13 @@ public class TileRenderer
 			else
 			{
 				drawTile(g, newIndex, mapX, mapY);
+			}
+			
+			Set<TileIndex> indices = tileset.getOverlaysFor(tile.getTerrain(), terrainModel.getNeighbors(mapX, mapY));
+			
+			for (TileIndex overlay : indices)
+			{
+				drawTile(g, overlay, mapX, mapY);
 			}
 		}
 	}

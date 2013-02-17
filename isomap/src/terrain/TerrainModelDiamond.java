@@ -183,27 +183,21 @@ public class TerrainModelDiamond
 		return result;
 	}
  
-	/**
-	 * @param x the x coord.
-	 * @param y the y coord.
-	 * @return the tile index
-	 */
-	public Set<TileIndex> computeIndices(int x, int y)
+	public Map<OctDirection, TerrainType> getNeighbors(int mapX, int mapY)
 	{
-		TerrainType type = getTerrain(x, y);
 		Map<OctDirection, TerrainType> pattern = new HashMap<OctDirection, TerrainType>();
 		
 		for (OctDirection dir : OctDirection.values())
 		{
-			TerrainType neigh = getNeighborFor(x, y, dir);
+			TerrainType neigh = getNeighborFor(mapX, mapY, dir);
 			
 			if (neigh != UNDEFINED)
 				pattern.put(dir, neigh);
 		}
 
-		return tileSet.getIndicesFor(type, pattern);
+		return pattern;
 	}
-
+	
 	/**
 	 * @param x the x coord
 	 * @param y the y coord
@@ -229,10 +223,10 @@ public class TerrainModelDiamond
 			return getTerrain(x + 1, y);
 			
 		case NORTH:
-			return getTerrain(x, y - 1);
+			return getTerrain(x, y - 2);
 
 		case SOUTH:
-			return getTerrain(x, y + 1);
+			return getTerrain(x, y + 2);
 			
 		case WEST:
 			return getTerrain(x - 1, y);
@@ -258,7 +252,5 @@ public class TerrainModelDiamond
 
 		return UNDEFINED;
 	}
-
-
 	
 }
