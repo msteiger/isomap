@@ -1,0 +1,180 @@
+{
+  "tileWidth" : 54,
+  "tileHeight" : 28,
+  "tileImageWidth" : 54,
+  "tileImageHeight" : 48,
+  "overlapX" : 0,
+  "overlapY" : 10,
+  "indexGroups" : [ {
+    "terrain" : "GRASS",
+    "indices" : [ 8, 9, 10, 11 ],
+    "borders" : {
+      "NORTH_EAST" : "GRASS",
+      "SOUTH_EAST" : "GRASS",
+      "SOUTH_WEST" : "GRASS",
+      "NORTH_WEST" : "GRASS"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 2, 3, 4, 5, 6, 7 ],
+    "borders" : {
+      "NORTH_EAST" : "WATER",
+      "SOUTH_EAST" : "WATER",
+      "SOUTH_WEST" : "WATER",
+      "NORTH_WEST" : "WATER"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 12, 13 ],
+    "borders" : {
+      "NORTH_EAST" : "GRASS",
+      "SOUTH_EAST" : "WATER",
+      "SOUTH_WEST" : "WATER",
+      "NORTH_WEST" : "WATER"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 14, 15 ],
+    "borders" : {
+      "NORTH_EAST" : "WATER",
+      "SOUTH_EAST" : "GRASS",
+      "SOUTH_WEST" : "WATER",
+      "NORTH_WEST" : "WATER"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 17, 16 ],
+    "borders" : {
+      "NORTH_EAST" : "GRASS",
+      "SOUTH_EAST" : "GRASS",
+      "SOUTH_WEST" : "WATER",
+      "NORTH_WEST" : "WATER"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 19, 18 ],
+    "borders" : {
+      "NORTH_EAST" : "WATER",
+      "SOUTH_EAST" : "WATER",
+      "SOUTH_WEST" : "GRASS",
+      "NORTH_WEST" : "WATER"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 21, 20 ],
+    "borders" : {
+      "NORTH_EAST" : "GRASS",
+      "SOUTH_EAST" : "WATER",
+      "SOUTH_WEST" : "GRASS",
+      "NORTH_WEST" : "WATER"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 23, 22 ],
+    "borders" : {
+      "NORTH_EAST" : "WATER",
+      "SOUTH_EAST" : "GRASS",
+      "SOUTH_WEST" : "GRASS",
+      "NORTH_WEST" : "WATER"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 25, 24 ],
+    "borders" : {
+      "NORTH_EAST" : "GRASS",
+      "SOUTH_EAST" : "GRASS",
+      "SOUTH_WEST" : "GRASS",
+      "NORTH_WEST" : "WATER"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 27, 26 ],
+    "borders" : {
+      "NORTH_EAST" : "WATER",
+      "SOUTH_EAST" : "WATER",
+      "SOUTH_WEST" : "WATER",
+      "NORTH_WEST" : "GRASS"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 29, 28 ],
+    "borders" : {
+      "NORTH_EAST" : "GRASS",
+      "SOUTH_EAST" : "WATER",
+      "SOUTH_WEST" : "WATER",
+      "NORTH_WEST" : "GRASS"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 31, 30 ],
+    "borders" : {
+      "NORTH_EAST" : "WATER",
+      "SOUTH_EAST" : "GRASS",
+      "SOUTH_WEST" : "WATER",
+      "NORTH_WEST" : "GRASS"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 32, 33 ],
+    "borders" : {
+      "NORTH_EAST" : "GRASS",
+      "SOUTH_EAST" : "GRASS",
+      "SOUTH_WEST" : "WATER",
+      "NORTH_WEST" : "GRASS"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 34, 35 ],
+    "borders" : {
+      "NORTH_EAST" : "WATER",
+      "SOUTH_EAST" : "WATER",
+      "SOUTH_WEST" : "GRASS",
+      "NORTH_WEST" : "GRASS"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 36, 37 ],
+    "borders" : {
+      "NORTH_EAST" : "GRASS",
+      "SOUTH_EAST" : "WATER",
+      "SOUTH_WEST" : "GRASS",
+      "NORTH_WEST" : "GRASS"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 38, 39 ],
+    "borders" : {
+      "NORTH_EAST" : "WATER",
+      "SOUTH_EAST" : "GRASS",
+      "SOUTH_WEST" : "GRASS",
+      "NORTH_WEST" : "GRASS"
+    }
+  }, {
+    "terrain" : "WATER",
+    "indices" : [ 40, 41 ],
+    "borders" : {
+      "NORTH_EAST" : "GRASS",
+      "SOUTH_EAST" : "GRASS",
+      "SOUTH_WEST" : "GRASS",
+      "NORTH_WEST" : "GRASS"
+    }
+  }, {
+    "terrain" : "MOUNTAIN",
+    "indices" : [ 51, 50, 49, 48, 55, 54, 53, 52 ],
+    "borders" : {
+      "NORTH_EAST" : "GRASS",
+      "SOUTH_EAST" : "GRASS",
+      "SOUTH_WEST" : "GRASS",
+      "NORTH_WEST" : "GRASS"
+    }
+  }, {
+    "terrain" : "FOREST",
+    "indices" : [ 76, 77, 78, 79, 72, 73, 74, 75 ],
+    "borders" : {
+      "NORTH_EAST" : "GRASS",
+      "SOUTH_EAST" : "GRASS",
+      "SOUTH_WEST" : "GRASS",
+      "NORTH_WEST" : "GRASS"
+    }
+  } ]
+}

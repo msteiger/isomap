@@ -1,0 +1,38 @@
+{
+  "terrain" : "GRASS",
+  "borders" : {
+    "NORTH_EAST" : "GRASS",
+    "SOUTH_EAST" : "GRASS",
+    "SOUTH_WEST" : "GRASS",
+    "NORTH_WEST" : "GRASS"
+  },
+  "indices" : [ {
+    "globalIndex" : 8,
+    "localIndex" : 8,
+    "tileImage" : {
+      "tileWidth" : 54,
+      "tileHeight" : 28
+    }
+  }, {
+    "globalIndex" : 11,
+    "localIndex" : 11,
+    "tileImage" : {
+      "tileWidth" : 54,
+      "tileHeight" : 28
+    }
+  }, {
+    "globalIndex" : 9,
+    "localIndex" : 9,
+    "tileImage" : {
+      "tileWidth" : 54,
+      "tileHeight" : 28
+    }
+  }, {
+    "globalIndex" : 10,
+    "localIndex" : 10,
+    "tileImage" : {
+      "tileWidth" : 54,
+      "tileHeight" : 28
+    }
+  } ]
+}

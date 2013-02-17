@@ -19,12 +19,18 @@ package pack;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tiles.TileSet;
+import io.TileSetBuilder;
+import io.json.TileSetBuilderJson;
 
 /**
  * TODO Type description
@@ -36,6 +42,15 @@ public class Example
 
 	public static void main(String[] args) throws Exception
 	{
+		TileSetBuilder tileSetBuilder = new TileSetBuilder();
+		TileSet tileset = tileSetBuilder.readFromStream(new FileInputStream("data/treasurefleet.tsd"));
+
+		File jsonFile = new File("data/treasurefleet.json");
+		
+		TileSetBuilderJson.writeToStream(tileset, jsonFile);
+		
+//		TileSetBuilderJson.readFromStream(jsonFile);
+
 		final MyComponent comp = new MyComponent();
 
 		Timer timer = new Timer(100, new ActionListener()
