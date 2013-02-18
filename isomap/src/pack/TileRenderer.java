@@ -29,8 +29,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import terrain.GridData;
-import terrain.TerrainModelDiamond;
+import terrain.IsoTerrainModel;
 import terrain.TerrainType;
 import terrain.Tile;
 import tiles.TileImage;
@@ -39,6 +38,7 @@ import tiles.TileIndexResolver;
 import tiles.TileSet;
 
 import common.DefaultValueMap;
+import common.GridData;
 
 /**
  * TODO Type description
@@ -47,7 +47,7 @@ import common.DefaultValueMap;
 public class TileRenderer
 {
 	private Viewport view;
-	private TerrainModelDiamond terrainModel;
+	private IsoTerrainModel terrainModel;
 	private TileSet tileset;
 	private TileIndexResolver indexResolver;
 	
@@ -63,7 +63,7 @@ public class TileRenderer
 	 * @param terrainModel
 	 * @param view2
 	 */
-	public TileRenderer(TerrainModelDiamond terrainModel, TileSet tileset, Viewport view)
+	public TileRenderer(IsoTerrainModel terrainModel, TileSet tileset, Viewport view)
 	{
 		this.terrainModel = terrainModel;
 		this.tileset = tileset;

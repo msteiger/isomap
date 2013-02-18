@@ -32,13 +32,13 @@ import java.util.HashSet;
 
 import javax.swing.JComponent;
 
-import terrain.GridData;
-import terrain.TerrainModelDiamond;
+import terrain.IsoTerrainModel;
 import terrain.TerrainType;
 import terrain.Tile;
 import tiles.TileSet;
 
 import common.CollectionListener;
+import common.GridData;
 import common.ObservableSet;
 
 
@@ -52,7 +52,7 @@ public class MyComponent extends JComponent
 	
 	private TileRenderer tileRenderer;
 	
-	private TerrainModelDiamond terrainModel;
+	private IsoTerrainModel terrainModel;
 	private TileSet tileset;
 	private Viewport view = new Viewport();
 	private ObservableSet<Tile> hoveredTiles = new ObservableSet<Tile>(new HashSet<Tile>()); 
@@ -69,7 +69,7 @@ public class MyComponent extends JComponent
 		TileSetBuilder tileSetBuilder = new TileSetBuilder();
 		tileset = tileSetBuilder.readFromStream(new FileInputStream("data/treasurefleet.tsd"));
 
-		terrainModel = new TerrainModelDiamond(terrainData, tileset);
+		terrainModel = new IsoTerrainModel(terrainData, tileset);
 		
 		MouseAdapter ma = new ViewportMouseAdapter(view);
 		view.addObserver(new RepaintingObserver(this));

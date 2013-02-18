@@ -27,6 +27,7 @@ import java.util.Map;
 import tiles.TileSet;
 
 import com.google.common.base.Optional;
+import common.GridData;
 
 import dirs.OctDirection;
 
@@ -34,7 +35,7 @@ import dirs.OctDirection;
  * TODO Type description
  * @author Martin Steiger
  */
-public class TerrainModelDiamond
+public class IsoTerrainModel implements TerrainModel
 {
 	private final GridData<Tile> tiles;
 
@@ -47,7 +48,7 @@ public class TerrainModelDiamond
 	/**
 	 * @param data the terrain data
 	 */
-	public TerrainModelDiamond(GridData<TerrainType> terrainData, TileSet tileSet)
+	public IsoTerrainModel(GridData<TerrainType> terrainData, TileSet tileSet)
 	{
 		mapWidth = terrainData.getWidth();
 		mapHeight = terrainData.getHeight();
@@ -72,38 +73,38 @@ public class TerrainModelDiamond
 		return v % 2 == 1;
 	}
 
-	/**
-	 * @return the map height
-	 */
+	@Override
 	public int getMapHeight()
 	{
 		return mapHeight;
 	}
 
-	/**
-	 * @return the map width
-	 */
+	@Override
 	public int getMapWidth()
 	{
 		return mapWidth;
 	}	
 	
 	
-	public Tile getTile(int x, int y)
+	@Override
+	public Tile getTile(int mapX, int mapY)
 	{
-		return tiles.getData(x, y);
+		return tiles.getData(mapX, mapY);
 	}
 
-	public int getWorldX(int x, int y)
+	@Override
+	public int getWorldX(int mapX, int mapY)
 	{
-		return x * tileSet.getTileWidth() + (y % 2) * tileSet.getTileWidth() / 2;
+		return mapX * tileSet.getTileWidth() + (mapY % 2) * tileSet.getTileWidth() / 2;
 	}
 
+	@Override
 	public int getWorldY(int x, int y)
 	{
 		return y * tileSet.getTileHeight() / 2;
 	}
 	
+	@Override
 	public Optional<Tile> getTileAtWorldPos(int worldX, int worldY)
 	{
 		double w = tileSet.getTileWidth();
@@ -141,13 +142,7 @@ public class TerrainModelDiamond
 		return Optional.absent();
 	}
 
-	/**
-	 * @param worldX0
-	 * @param worldY0
-	 * @param worldX1
-	 * @param worldY1
-	 * @return
-	 */
+	@Override
 	public List<Tile> getTilesInRect(int worldX0, int worldY0, int worldX1, int worldY1)
 	{
 		int tileWidth = tileSet.getTileWidth();
@@ -181,6 +176,7 @@ public class TerrainModelDiamond
 		return result;
 	}
  
+	@Override
 	public Map<OctDirection, TerrainType> getNeighbors(int mapX, int mapY)
 	{
 		Map<OctDirection, TerrainType> pattern = new HashMap<OctDirection, TerrainType>();

@@ -25,7 +25,7 @@ import com.google.common.base.Optional;
 
 import pack.Viewport;
 
-import terrain.TerrainModelDiamond;
+import terrain.TerrainModel;
 import terrain.Tile;
 
 /**
@@ -34,7 +34,7 @@ import terrain.Tile;
 public class TilemapMouseAdapter implements MouseMotionListener
 {
 	private final Viewport view;
-	private final TerrainModelDiamond terrainModel;
+	private final TerrainModel terrainModel;
 	private final Set<Tile> selectionModel;
 
 	/**
@@ -42,7 +42,7 @@ public class TilemapMouseAdapter implements MouseMotionListener
 	 * @param terrainModel
 	 * @param selectionModel
 	 */
-	public TilemapMouseAdapter(Viewport view, TerrainModelDiamond terrainModel, Set<Tile> selectionModel)
+	public TilemapMouseAdapter(Viewport view, TerrainModel terrainModel, Set<Tile> selectionModel)
 	{
 		this.view = view;
 		this.terrainModel = terrainModel;

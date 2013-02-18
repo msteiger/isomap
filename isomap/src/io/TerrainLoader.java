@@ -24,7 +24,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import terrain.GridData;
+import common.GridData;
+
 import terrain.TerrainType;
 
 
