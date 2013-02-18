@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tiles.HexTileSet;
 import tiles.TileSet;
 
 import com.google.common.base.Optional;
@@ -35,11 +36,11 @@ import dirs.OctDirection;
  * TODO Type description
  * @author Martin Steiger
  */
-public class IsoTerrainModel implements TerrainModel
+public class HexTerrainModel implements TerrainModel
 {
 	private final GridData<Tile> tiles;
 
-	private final TileSet tileSet;
+	private final HexTileSet tileSet;
 
 	private int mapWidth;
 	private int mapHeight;
@@ -48,7 +49,7 @@ public class IsoTerrainModel implements TerrainModel
 	/**
 	 * @param data the terrain data
 	 */
-	public IsoTerrainModel(GridData<TerrainType> terrainData, TileSet tileSet)
+	public HexTerrainModel(GridData<TerrainType> terrainData, HexTileSet tileSet)
 	{
 		mapWidth = terrainData.getWidth();
 		mapHeight = terrainData.getHeight();
@@ -65,6 +66,7 @@ public class IsoTerrainModel implements TerrainModel
 				tiles.setData(x, y, tile);
 			}
 		}
+		
 	}
 
 	private static boolean isOdd(int v)
@@ -84,58 +86,60 @@ public class IsoTerrainModel implements TerrainModel
 		return mapWidth;
 	}	
 	
-	
 	@Override
-	public Tile getTile(int mapX, int mapY)
+	public Tile getTile(int x, int y)
 	{
-		return tiles.getData(mapX, mapY);
+		return tiles.getData(x, y);
 	}
 
 	@Override
-	public int getWorldX(int mapX, int mapY)
+	public int getWorldX(int x, int y)
 	{
-		return mapX * tileSet.getTileWidth() + (mapY % 2) * tileSet.getTileWidth() / 2;
+		return x * (tileSet.getTopLength() + tileSet.getTileWidth()) / 2;
 	}
 
 	@Override
 	public int getWorldY(int x, int y)
 	{
-		return y * tileSet.getTileHeight() / 2;
+		return y * tileSet.getTileHeight() + (x % 2) * tileSet.getTileHeight() / 2;
 	}
 	
 	@Override
-	public Optional<Tile> getTileAtWorldPos(int worldX, int worldY)
+	public Optional<Tile> getTileAtWorldPos(int x, int y)
 	{
 		double w = tileSet.getTileWidth();
 		double h = tileSet.getTileHeight();
 
-		// Origin is at (0, h/2)
-		worldY -= h / 2; 
-
-		//     ( w/2 )        ( w/2 )
-		// r = (     )    c = (     ) 
-		//     ( h/2 )        (-h/2 )
+		double a = w/2;
+		double b = h/2;
 		
-		// x = r * w + c * w
-		// y = r * h - c * h
+		double c = tileSet.getTopLength() / 2.0;
 		
-		// solving for r gives r = y/h + c
+		x -= tileSet.getTileWidth() / 2;
+		y -= tileSet.getTileHeight() / 2;
 		
-		// Math.floor() rounds negative values down whereas casting to int rounds them up
-		int r = (int) Math.floor(worldX / w + worldY / h); 
-		int c = (int) Math.floor(worldX / w - worldY / h);
-
-		// r and c are only one tile edge long
-		int x = (int)Math.floor((r + c) / 2.0);
+		// Find out which major row and column we are on:
+	    int row = (int)(y / b);
+	    int col = (int)(x / (a + c));
+	 
+	    // Compute the offset into these row and column:
+	    double dy = y - row * b;
+	    double dx = x - col * (a + c);
+	 
+	    // Are we on the left of the hexagon edge, or on the right?
+	    if (((row ^ col) & 1) == 0)
+	        dy = b - dy;
+	    int right = dy * (a - c) < b * (dx - c) ? 1 : 0;
+	 
+	    // Now we have all the information we need, just fine-tune row and column.
+	    row += (col ^ row ^ right) & 1;
+	    col += right;
 		
-		// r - c always >= 0
-		int y = r - c;
-		
-		if (x >= 0 && x < mapWidth &&
-			y >= 0 && y < mapHeight)
+		if (col >= 0 && col < mapWidth &&
+			row >= 0 && row < mapHeight)
 
 		{
-			return Optional.of(getTile(x, y));
+			return Optional.of(getTile(col, row));
 		}
 		
 		return Optional.absent();
@@ -144,28 +148,27 @@ public class IsoTerrainModel implements TerrainModel
 	@Override
 	public List<Tile> getTilesInRect(int worldX0, int worldY0, int worldX1, int worldY1)
 	{
-		int tileWidth = tileSet.getTileWidth();
 		int tileHeight = tileSet.getTileHeight();
+		
+		int avgWidth = (tileSet.getTopLength() + tileSet.getTileWidth()) / 2;
 		
 		// this computes the map-y based on rectangular shapes 
 		// it is then independent of x - basically the inverse of getWorldY()
-		int y0 = (worldY0 * 2) / tileHeight - 1;
-		int y1 = (worldY1 * 2) / tileHeight;
+		int y0 = worldY0 / tileHeight - 1;
+		int y1 = worldY1 / tileHeight;
+		int x0 = worldX0 / avgWidth;
+		int x1 = worldX1 / avgWidth;
 		
 		// Restrict to map bounds
 		int minY = Math.max(y0, 0);
 		int maxY = Math.min(y1, mapHeight - 1);
+		int minX = Math.max(x0, 0);
+		int maxX = Math.min(x1, mapWidth - 1);
 
 		List<Tile> result = new ArrayList<Tile>();
 
 		for (int y = minY; y <= maxY; y++)
 		{
-			int x0 = (worldX0 - (y % 2) * tileWidth / 2) / tileWidth;
-			int x1 = (worldX1 - (y % 2) * tileWidth / 2) / tileWidth;
-
-			int minX = Math.max(x0, 0);
-			int maxX = Math.min(x1, mapWidth - 1);
-
 			for (int x = minX; x <= maxX; x++)
 			{
 				result.add(getTile(x, y));
@@ -212,37 +215,39 @@ public class IsoTerrainModel implements TerrainModel
 	{
 		switch (dir)
 		{
-		case EAST:
-			return getTerrain(x + 1, y);
-			
 		case NORTH:
-			return getTerrain(x, y - 2);
+			return getTerrain(x, y - 1);
 
 		case SOUTH:
-			return getTerrain(x, y + 2);
+			return getTerrain(x, y + 1);
 			
-		case WEST:
-			return getTerrain(x - 1, y);
-
 		case NORTH_EAST:
 			if (isOdd(y)) 
-				return getTerrain(x + 1, y - 1); else 
-				return getTerrain(x, y - 1);
+				return getTerrain(x + 1, y); else 
+				return getTerrain(x + 1, y - 1);
 			
 		case NORTH_WEST:
 			if (isOdd(y))
-				return getTerrain(x, y - 1); else
+				return getTerrain(x - 1, y); else
 				return getTerrain(x - 1, y - 1);
+			
 		case SOUTH_EAST:
 			if (isOdd(y))
 				return getTerrain(x + 1, y + 1); else
-				return getTerrain(x, y + 1);
+				return getTerrain(x + 1, y);
+			
 		case SOUTH_WEST:
 			if (isOdd(y))
-				return getTerrain(x, y + 1); else
-				return getTerrain(x - 1, y + 1);
+				return getTerrain(x - 1, y + 1); else
+				return getTerrain(x - 1, y);
+			
+		case EAST:
+			return UNDEFINED;
+			
+		case WEST:
+			return UNDEFINED;
 		}
-
+		
 		return UNDEFINED;
 	}
 	

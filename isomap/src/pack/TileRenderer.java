@@ -30,6 +30,7 @@ import java.util.Random;
 import java.util.Set;
 
 import terrain.IsoTerrainModel;
+import terrain.TerrainModel;
 import terrain.TerrainType;
 import terrain.Tile;
 import tiles.TileImage;
@@ -47,7 +48,7 @@ import common.GridData;
 public class TileRenderer
 {
 	private Viewport view;
-	private IsoTerrainModel terrainModel;
+	private TerrainModel terrainModel;
 	private TileSet tileset;
 	private TileIndexResolver indexResolver;
 	
@@ -63,7 +64,7 @@ public class TileRenderer
 	 * @param terrainModel
 	 * @param view2
 	 */
-	public TileRenderer(IsoTerrainModel terrainModel, TileSet tileset, Viewport view)
+	public TileRenderer(TerrainModel terrainModel, TileSet tileset, Viewport view)
 	{
 		this.terrainModel = terrainModel;
 		this.tileset = tileset;
@@ -110,7 +111,7 @@ public class TileRenderer
 		TerrainType terrain = terrainModel.getTile(mapX, mapY).getTerrain();
 		Set<TileIndex> indices = indexResolver.getIndicesFor(terrain, terrainModel.getNeighbors(mapX, mapY));
 		
-		if (indices.isEmpty())
+		if (indices.size() <= 1)
 			return;
 
 		index = getRandomOtherThan(indices, index);

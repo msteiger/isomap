@@ -93,7 +93,9 @@ public class TileIndexResolver
 			if (tig.getTerrain() == type)
 			{
 				if (doesMatch(tig, pattern))
+				{
 					return tig.getIndices();
+				}
 			}
 		}
 

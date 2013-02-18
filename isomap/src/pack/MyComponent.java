@@ -20,7 +20,7 @@ package pack;
 import input.TilemapMouseAdapter;
 import input.ViewportMouseAdapter;
 import io.TerrainLoader;
-import io.TileSetBuilder;
+import io.TileSetBuilderWesnoth;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -33,9 +33,10 @@ import java.util.HashSet;
 import javax.swing.JComponent;
 
 import terrain.IsoTerrainModel;
+import terrain.HexTerrainModel;
 import terrain.TerrainType;
 import terrain.Tile;
-import tiles.TileSet;
+import tiles.HexTileSet;
 
 import common.CollectionListener;
 import common.GridData;
@@ -52,8 +53,9 @@ public class MyComponent extends JComponent
 	
 	private TileRenderer tileRenderer;
 	
-	private IsoTerrainModel terrainModel;
-	private TileSet tileset;
+	private HexTerrainModel terrainModel;
+	private HexTileSet tileset;
+
 	private Viewport view = new Viewport();
 	private ObservableSet<Tile> hoveredTiles = new ObservableSet<Tile>(new HashSet<Tile>()); 
 	
@@ -66,11 +68,14 @@ public class MyComponent extends JComponent
 		TerrainLoader terrainLoader = new TerrainLoader();
 		GridData<TerrainType> terrainData = terrainLoader.load(terrainDataStream);
 		
-		TileSetBuilder tileSetBuilder = new TileSetBuilder();
-		tileset = tileSetBuilder.readFromStream(new FileInputStream("data/treasurefleet.tsd"));
-
-		terrainModel = new IsoTerrainModel(terrainData, tileset);
+//		TileSetBuilder tileSetBuilder = new TileSetBuilder();
+//		tileset = tileSetBuilder.readFromStream(new FileInputStream("data/treasurefleet.tsd"));
 		
+		TileSetBuilderWesnoth tb = new TileSetBuilderWesnoth();
+		tileset = tb.read();
+
+		terrainModel = new HexTerrainModel(terrainData, tileset);
+
 		MouseAdapter ma = new ViewportMouseAdapter(view);
 		view.addObserver(new RepaintingObserver(this));
 		

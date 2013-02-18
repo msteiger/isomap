@@ -15,18 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dirs;
+package tiles;
 
 /**
  * TODO Type description
  * @author Martin Steiger
  */
-public enum HexDirection
+public class HexTileSet extends TileSet
 {
-	NORTH_EAST,
-	EAST,
-	SOUTH_EAST,
-	SOUTH_WEST,
-	WEST,
-	NORTH_WEST
+	private final int topLength;
+
+	/**
+	 * @param tileWidth
+	 * @param tileHeight
+	 */
+	public HexTileSet(int tileWidth, int tileHeight, int topLength)
+	{
+		super(tileWidth, tileHeight);
+		
+		this.topLength = topLength;
+	}
+
+	/**
+	 * @return the topLength
+	 */
+	public int getTopLength()
+	{
+		return topLength;
+	}
+	
 }
