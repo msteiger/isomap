@@ -61,7 +61,7 @@ public class TileSet
 		for (int i = 0; i < tileCount; i++)
 		{
 			TileIndex index = new TileIndex(i + firstIndex, i);
-			indices.put(i, index);
+			indices.put(i + firstIndex, index);
 			images.put(index, tileImage);
 		}
 	}
@@ -80,7 +80,10 @@ public class TileSet
 		TileIndexGroup tig = getIndexGroup(type, borders);
 		
 		for (Integer idx : set)
-			tig.addIndex(indices.get(idx));
+		{
+			TileIndex tileIndex = indices.get(idx);
+			tig.addIndex(tileIndex);
+		}
 	}
 
 	public int getTileWidth()
