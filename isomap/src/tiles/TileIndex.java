@@ -52,5 +52,12 @@ public class TileIndex
 	{
 		return localIndex;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "TileIndex [" + globalIndex + ", " + localIndex + "]";
+	}
+	
 	
 }

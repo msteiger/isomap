@@ -209,4 +209,13 @@ public class TileImage
 			throw new IllegalArgumentException("TileIndex " + index + " contains invalid local index");
 		
 	}
+
+	@Override
+	public String toString()
+	{
+		return "TileImage [" + imageFile + ", (" + overlapLeft + ", " + overlapTop + ", " + overlapRight
+				+ ", " + overlapBottom + "), (" + tileWidth + ", " + tileHeight + ")]";
+	}
+	
+	
 }

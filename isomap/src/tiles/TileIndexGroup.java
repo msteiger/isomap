@@ -82,4 +82,10 @@ public class TileIndexGroup
 	{
 		return Collections.unmodifiableSet(indices);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "TileIndexGroup [" + terrain + ", " + map + ", " + indices + "]";
+	}
 }
