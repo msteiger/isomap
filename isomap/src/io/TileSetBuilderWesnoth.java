@@ -23,7 +23,6 @@ import java.util.Map;
 
 import terrain.TerrainType;
 import tiles.HexTileSet;
-import tiles.TileSet;
 
 import com.google.common.collect.DiscreteDomains;
 import com.google.common.collect.Ranges;
@@ -40,7 +39,7 @@ public class TileSetBuilderWesnoth
 	{
 		Map<OctDirection, TerrainType> borders = new HashMap<>();
 
-		HexTileSet ts = new HexTileSet(72, 72, 37);
+		HexTileSet ts = new HexTileSet(72, 72, 36);
 		ts.addImage(new File("data/wesnoth/foreground.png"), 0, 0, 0, 0);
 		ts.setCursorTileIndex(0);
 		ts.setInvalidTileIndex(0);

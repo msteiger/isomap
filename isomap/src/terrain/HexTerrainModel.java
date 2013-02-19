@@ -107,12 +107,8 @@ public class HexTerrainModel implements TerrainModel
 	@Override
 	public Optional<Tile> getTileAtWorldPos(int x, int y)
 	{
-		double w = tileSet.getTileWidth();
-		double h = tileSet.getTileHeight();
-
-		double a = w/2;
-		double b = h/2;
-		
+		double a = tileSet.getTileWidth() / 2;
+		double b = tileSet.getTileHeight() / 2;
 		double c = tileSet.getTopLength() / 2.0;
 		
 		x -= tileSet.getTileWidth() / 2;
@@ -136,10 +132,10 @@ public class HexTerrainModel implements TerrainModel
 	    col += right;
 		
 		if (col >= 0 && col < mapWidth &&
-			row >= 0 && row < mapHeight)
+			row >= 0 && row < mapHeight * 2)
 
 		{
-			return Optional.of(getTile(col, row));
+			return Optional.of(getTile(col, row / 2));
 		}
 		
 		return Optional.absent();
