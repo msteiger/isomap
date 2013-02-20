@@ -144,33 +144,61 @@ public class HexTerrainModel implements TerrainModel
 	@Override
 	public List<Tile> getTilesInRect(int worldX0, int worldY0, int worldX1, int worldY1)
 	{
-		int tileHeight = tileSet.getTileHeight();
+		int tileHeight = tileSet.getTileHeight() / 2;
 		
 		int avgWidth = (tileSet.getTopLength() + tileSet.getTileWidth()) / 2;
 		
+		// the width of one diagonal
+		int leftIn = (tileSet.getTileWidth() - tileSet.getTopLength()) / 2;
+		
 		// this computes the map-y based on rectangular shapes 
 		// it is then independent of x - basically the inverse of getWorldY()
-		int y0 = worldY0 / tileHeight - 1;
-		int y1 = worldY1 / tileHeight;
-		int x0 = worldX0 / avgWidth;
+		
+		int y02 = worldY0 / tileHeight - 1;	// the prev. row is displayed as it is 2 rows high
+		int y12 = worldY1 / tileHeight - 1;
+		int x0 = (worldX0 - leftIn) / avgWidth;
 		int x1 = worldX1 / avgWidth;
 		
 		// Restrict to map bounds
-		int minY = Math.max(y0, 0);
-		int maxY = Math.min(y1, mapHeight - 1);
+		int minY = Math.max(y02, 0);
+		int maxY = Math.min(y12, 2 * mapHeight - 2);
 		int minX = Math.max(x0, 0);
 		int maxX = Math.min(x1, mapWidth - 1);
 
 		List<Tile> result = new ArrayList<Tile>();
 
-		for (int y = minY; y <= maxY; y++)
+		// if the top y/2 value is odd
+		// then add every odd x tile
+		if (minY % 2 == 1)
+		{
+			for (int x = minX + (minX + 1) % 2; x <= maxX; x += 2)
+			{
+				result.add(getTile(x, minY / 2));
+			}
+			
+			minY++;
+		}
+		
+		// minY is always even here
+		
+		for (int y = minY; y <= maxY; y += 2)
 		{
 			for (int x = minX; x <= maxX; x++)
 			{
-				result.add(getTile(x, y));
+				result.add(getTile(x, y / 2));
 			}
 		}
 
+		// if the bottom y/2 value is odd
+		// then add every even x tile
+		if (maxY % 2 == 1)
+		{
+			for (int x = minX + (minX % 2); x < maxX + 1; x += 2)
+			{
+				result.add(getTile(x, maxY / 2 + 1));
+			}
+		}
+		
 		return result;
 	}
  
