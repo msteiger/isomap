@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import terrain.IsoTerrainModel;
 import terrain.TerrainModel;
 import terrain.TerrainType;
 import terrain.Tile;
@@ -266,6 +265,17 @@ public class TileRenderer
 		int dy2 = view.worldYToScreenY(worldY + imgHeight);
 
 		g.drawImage(img.getImage(), dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
+
+//		AffineTransform at = new AffineTransform();
+//		at.translate(view.worldXToScreenX(0), view.worldYToScreenY(0));
+//		at.scale(view.getZoom(), view.getZoom());
+//		
+//		g.setTransform(at);
+//		
+//		g.drawImage(img.getImage(), worldX, worldY, worldX + imgWidth, worldY + imgHeight, sx1, sy1, sx2, sy2, null);
+//		
+//		g.setTransform(old);
+
 	}
 
 	/**
