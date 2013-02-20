@@ -95,6 +95,10 @@ public class TileSetBuilderWesnoth
 
 		ts.defineTerrain(Ranges.closed(34, 36).asSet(DiscreteDomains.integers()), TerrainType.MOUNTAIN, borders);
 
+		ts.addImage(new File("data/wesnoth/grid.png"), 0, 0, 0, 0);
+
+		ts.setGridTileIndex(37);
+		
 		return ts;
 	}
 }

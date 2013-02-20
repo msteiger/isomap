@@ -43,6 +43,7 @@ public class TileSet
 
 	private TileIndex cursorTileIndex;
 	private TileIndex invalidTileIndex;
+	private TileIndex gridTileIndex;
 	
 	
 	public TileSet(int tileWidth, int tileHeight)
@@ -144,4 +145,21 @@ public class TileSet
 	{
 		invalidTileIndex = indices.get(idx);
 	}
+
+	/**
+	 * @return the gridTileIndex
+	 */
+	public TileIndex getGridTileIndex()
+	{
+		return gridTileIndex;
+	}
+
+	/**
+	 * @param index the gridTileIndex to set
+	 */
+	public void setGridTileIndex(int index)
+	{
+		this.gridTileIndex = indices.get(index);
+	}
+	
 }

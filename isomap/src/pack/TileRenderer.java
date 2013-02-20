@@ -204,6 +204,8 @@ public class TileRenderer
 			{
 				drawTile(g, overlay, mapX, mapY);
 			}
+			
+			drawTile(g, tileset.getGridTileIndex(), mapX, mapY);
 		}
 	}
 	
