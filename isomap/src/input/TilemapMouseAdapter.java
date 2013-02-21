@@ -19,30 +19,33 @@ package input;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.util.Collections;
 import java.util.Set;
-
-import com.google.common.base.Optional;
-
 
 import terrain.TerrainModel;
 import terrain.Tile;
 import view.Viewport;
 
+import com.google.common.base.Optional;
+import common.SelectionModel;
+
 /**
- * TODO Type description
+ * Whenever the mouse is moved, the tile
+ * under the cursor is set as selection in the model
+ * @author Martin Steiger
  */
 public class TilemapMouseAdapter implements MouseMotionListener
 {
 	private final Viewport view;
 	private final TerrainModel terrainModel;
-	private final Set<Tile> selectionModel;
+	private final SelectionModel<Tile> selectionModel;
 
 	/**
 	 * @param view
 	 * @param terrainModel
 	 * @param selectionModel
 	 */
-	public TilemapMouseAdapter(Viewport view, TerrainModel terrainModel, Set<Tile> selectionModel)
+	public TilemapMouseAdapter(Viewport view, TerrainModel terrainModel, SelectionModel<Tile> selectionModel)
 	{
 		this.view = view;
 		this.terrainModel = terrainModel;
@@ -52,8 +55,6 @@ public class TilemapMouseAdapter implements MouseMotionListener
 	@Override
 	public void mouseMoved(MouseEvent e)
 	{
-		selectionModel.clear();
-
 		int worldX = view.screenXToWorldX(e.getX());
 		int worldY = view.screenYToWorldY(e.getY());
 		
@@ -61,14 +62,16 @@ public class TilemapMouseAdapter implements MouseMotionListener
 
 		if (opTile.isPresent())
 		{
-			selectionModel.add(opTile.get());
+			Tile tile = opTile.get();
+			Set<Tile> set = Collections.singleton(tile);
+			selectionModel.set(set);
 		}
 	}
 	
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
+		// ignored
 	}
 	
 }
