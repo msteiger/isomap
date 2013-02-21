@@ -24,8 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import common.OctDirection;
+
 import terrain.TerrainType;
-import dirs.OctDirection;
 
 /**
  * TODO Type description

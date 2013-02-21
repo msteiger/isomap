@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Optional;
+import common.OctDirection;
 
-import dirs.OctDirection;
 
 /**
  * Defines a terrain model in a very general form

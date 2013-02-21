@@ -28,8 +28,8 @@ import tiles.TileSet;
 
 import com.google.common.base.Optional;
 import common.GridData;
+import common.OctDirection;
 
-import dirs.OctDirection;
 
 /**
  * TODO Type description

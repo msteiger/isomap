@@ -30,10 +30,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import common.OctDirection;
+
 import terrain.TerrainType;
 import tiles.TileIndexGroup;
 import tiles.TileSet;
-import dirs.OctDirection;
 
 
 

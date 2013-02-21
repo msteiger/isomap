@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dirs;
+package common;
 
 /**
- * TODO Type description
+ * A simple enumeration of directions in 45 degree steps
  * @author Martin Steiger
  */
 public enum OctDirection

@@ -26,8 +26,8 @@ import tiles.HexTileSet;
 
 import com.google.common.collect.DiscreteDomains;
 import com.google.common.collect.Ranges;
+import common.OctDirection;
 
-import dirs.OctDirection;
 
 /**
  * TODO Type description
