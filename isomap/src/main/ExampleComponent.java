@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pack;
+package main;
 
 import input.TilemapMouseAdapter;
 import input.ViewportMouseAdapter;
@@ -32,45 +32,46 @@ import java.util.HashSet;
 
 import javax.swing.JComponent;
 
-import terrain.IsoTerrainModel;
 import terrain.HexTerrainModel;
 import terrain.TerrainType;
 import terrain.Tile;
 import tiles.HexTileSet;
+import view.TileRenderer;
+import view.Viewport;
 
+import common.RepaintingObserver;
 import common.CollectionListener;
 import common.GridData;
 import common.ObservableSet;
-
 
 /**
  * TODO Type description
  * @author Martin Steiger
  */
-public class MyComponent extends JComponent
+public class ExampleComponent extends JComponent
 {
 	private static final long serialVersionUID = 6701940511292511047L;
-	
+
 	private TileRenderer tileRenderer;
-	
+
 	private HexTerrainModel terrainModel;
 	private HexTileSet tileset;
 
 	private Viewport view = new Viewport();
-	private ObservableSet<Tile> hoveredTiles = new ObservableSet<Tile>(new HashSet<Tile>()); 
-	
+	private ObservableSet<Tile> hoveredTiles = new ObservableSet<Tile>(new HashSet<Tile>());
+
 	/**
 	 * 
 	 */
-	public MyComponent() throws IOException
+	public ExampleComponent() throws IOException
 	{
 		InputStream terrainDataStream = new FileInputStream("data/example.txt");
 		TerrainLoader terrainLoader = new TerrainLoader();
 		GridData<TerrainType> terrainData = terrainLoader.load(terrainDataStream);
-		
-//		TileSetBuilder tileSetBuilder = new TileSetBuilder();
-//		tileset = tileSetBuilder.readFromStream(new FileInputStream("data/treasurefleet.tsd"));
-		
+
+		//		TileSetBuilder tileSetBuilder = new TileSetBuilder();
+		//		tileset = tileSetBuilder.readFromStream(new FileInputStream("data/treasurefleet.tsd"));
+
 		TileSetBuilderWesnoth tb = new TileSetBuilderWesnoth();
 		tileset = tb.read();
 
@@ -78,11 +79,11 @@ public class MyComponent extends JComponent
 
 		MouseAdapter ma = new ViewportMouseAdapter(view);
 		view.addObserver(new RepaintingObserver(this));
-		
+
 		addMouseListener(ma);
 		addMouseMotionListener(ma);
 		addMouseWheelListener(ma);
-		
+
 		hoveredTiles.addListener(new CollectionListener<Tile>()
 		{
 			@Override
@@ -97,22 +98,20 @@ public class MyComponent extends JComponent
 				repaint();
 			}
 		});
-		
+
 		tileRenderer = new TileRenderer(terrainModel, tileset, view);
-		
+
 		TilemapMouseAdapter tma = new TilemapMouseAdapter(view, terrainModel, hoveredTiles);
 		addMouseMotionListener(tma);
 	}
 
-	
-	
 	@Override
 	protected void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
 
 		Graphics2D g2d = (Graphics2D) g;
-		
+
 		tileRenderer.drawTileset(g2d, getVisibleRect());
 		tileRenderer.drawHoveredTiles(g2d, hoveredTiles);
 	}
@@ -123,7 +122,7 @@ public class MyComponent extends JComponent
 	public void animate()
 	{
 		tileRenderer.nextFrame();
-		
+
 		repaint();
 	}
 

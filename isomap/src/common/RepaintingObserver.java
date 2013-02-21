@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pack;
+package common;
 
 import java.awt.Component;
 import java.util.Observable;
@@ -24,9 +24,9 @@ import java.util.Observer;
 /**
  * Triggers a repaint of the component
  * if notified
- * @author Isometric God
+ * @author Martin Steiger
  */
-final class RepaintingObserver implements Observer
+public class RepaintingObserver implements Observer
 {
 	private final Component component;
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pack;
+package view;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;

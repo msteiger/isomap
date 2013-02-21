@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pack; 
+package main; 
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,7 +36,7 @@ public class Example
 
 	public static void main(String[] args) throws Exception
 	{
-		final MyComponent comp = new MyComponent();
+		final ExampleComponent comp = new ExampleComponent();
 
 		Timer timer = new Timer(100, new ActionListener()
 		{

@@ -24,11 +24,11 @@ import java.awt.event.MouseWheelEvent;
 
 import javax.swing.SwingUtilities;
 
-import pack.Viewport;
+import view.Viewport;
 
 /**
  * Converts mouse events to viewport changes
- * @author Isometric God
+ * @author Martin Steiger
  */
 public final class ViewportMouseAdapter extends MouseAdapter
 {

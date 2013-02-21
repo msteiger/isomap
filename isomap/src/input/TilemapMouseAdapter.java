@@ -23,10 +23,10 @@ import java.util.Set;
 
 import com.google.common.base.Optional;
 
-import pack.Viewport;
 
 import terrain.TerrainModel;
 import terrain.Tile;
+import view.Viewport;
 
 /**
  * TODO Type description
