@@ -73,14 +73,14 @@ public class TileSetBuilderWesnoth
 
 		ts.defineTerrain(Ranges.closed(9, 23).asSet(DiscreteDomains.integers()), TerrainType.WATER, borders);
 
-		ts.addImage(new File("data/wesnoth/desert/desert.png"), 0, 0, 0, 0);
-		ts.addImage(new File("data/wesnoth/desert/desert2.png"), 0, 0, 0, 0);
-		ts.addImage(new File("data/wesnoth/desert/desert3.png"), 0, 0, 0, 0);
-		ts.addImage(new File("data/wesnoth/desert/desert4.png"), 0, 0, 0, 0);
-		ts.addImage(new File("data/wesnoth/desert/desert5.png"), 0, 0, 0, 0);
-		ts.addImage(new File("data/wesnoth/desert/desert6.png"), 0, 0, 0, 0);
-		ts.addImage(new File("data/wesnoth/desert/desert7.png"), 0, 0, 0, 0);
-		ts.addImage(new File("data/wesnoth/desert/desert8.png"), 0, 0, 0, 0);
+		ts.addImage(new File("data/wesnoth/sand/desert.png"), 0, 0, 0, 0);
+		ts.addImage(new File("data/wesnoth/sand/desert2.png"), 0, 0, 0, 0);
+		ts.addImage(new File("data/wesnoth/sand/desert3.png"), 0, 0, 0, 0);
+		ts.addImage(new File("data/wesnoth/sand/desert4.png"), 0, 0, 0, 0);
+		ts.addImage(new File("data/wesnoth/sand/desert5.png"), 0, 0, 0, 0);
+		ts.addImage(new File("data/wesnoth/sand/desert6.png"), 0, 0, 0, 0);
+		ts.addImage(new File("data/wesnoth/sand/desert7.png"), 0, 0, 0, 0);
+		ts.addImage(new File("data/wesnoth/sand/desert8.png"), 0, 0, 0, 0);
 		
 		ts.defineTerrain(Ranges.closed(24, 31).asSet(DiscreteDomains.integers()), TerrainType.SAND, borders);
 	
