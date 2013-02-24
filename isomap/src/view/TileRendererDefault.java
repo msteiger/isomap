@@ -39,9 +39,9 @@ public class TileRendererDefault extends AbstractTileRenderer
 	 * @param terrainModel
 	 * @param view2
 	 */
-	public TileRendererDefault(TerrainModel terrainModel, TileSet tileset, Viewport view)
+	public TileRendererDefault(TerrainModel terrainModel, TileSet tileset)
 	{
-		super(terrainModel, tileset, view);
+		super(terrainModel, tileset);
 		
 		this.indexProvider = new IndexProvider(terrainModel, tileset);
 	}

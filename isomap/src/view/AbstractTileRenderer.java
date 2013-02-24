@@ -30,18 +30,15 @@ import tiles.TileSet;
  */
 public abstract class AbstractTileRenderer
 {
-	private Viewport view;
-	private TerrainModel terrainModel;
-	private TileSet tileset;
+	private final TerrainModel terrainModel;
+	private final TileSet tileset;
 
 	/**
-	 * @param view
 	 * @param terrainModel
 	 * @param tileset
 	 */
-	public AbstractTileRenderer(TerrainModel terrainModel, TileSet tileset, Viewport view)
+	public AbstractTileRenderer(TerrainModel terrainModel, TileSet tileset)
 	{
-		this.view = view;
 		this.terrainModel = terrainModel;
 		this.tileset = tileset;
 	}
@@ -64,31 +61,7 @@ public abstract class AbstractTileRenderer
 		int worldX = terrainModel.getWorldX(mapX, mapY) - offX;
 		int worldY = terrainModel.getWorldY(mapX, mapY) - offY;
 
-		int dx1 = view.worldXToScreenX(worldX);
-		int dy1 = view.worldYToScreenY(worldY);
-		int dx2 = view.worldXToScreenX(worldX + imgWidth);
-		int dy2 = view.worldYToScreenY(worldY + imgHeight);
-
-		g.drawImage(img.getImage(), dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
-
-//		AffineTransform at = new AffineTransform();
-//		at.translate(view.worldXToScreenX(0), view.worldYToScreenY(0));
-//		at.scale(view.getZoom(), view.getZoom());
-//		
-//		g.setTransform(at);
-//		
-//		g.drawImage(img.getImage(), worldX, worldY, worldX + imgWidth, worldY + imgHeight, sx1, sy1, sx2, sy2, null);
-//		
-//		g.setTransform(old);
-
-	}
-
-	/**
-	 * @return the view
-	 */
-	protected Viewport getView()
-	{
-		return view;
+		g.drawImage(img.getImage(), worldX, worldY, worldX + imgWidth, worldY + imgHeight, sx1, sy1, sx2, sy2, null);
 	}
 
 	/**

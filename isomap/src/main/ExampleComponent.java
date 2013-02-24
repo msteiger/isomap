@@ -26,6 +26,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
+import java.awt.geom.AffineTransform;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -92,9 +93,9 @@ public class ExampleComponent extends JComponent
 
 		selectionModel.addObserver(new RepaintingObserver(this));
 		
-		tileRendererDefault = new TileRendererDefault(terrainModel, tileset, view);
-		tileRendererGrid = new TileRendererGrid(terrainModel, tileset, view);
-		tileRendererCursor = new TileRendererCursor(terrainModel, tileset, view);
+		tileRendererDefault = new TileRendererDefault(terrainModel, tileset);
+		tileRendererGrid = new TileRendererGrid(terrainModel, tileset);
+		tileRendererCursor = new TileRendererCursor(terrainModel, tileset);
 
 		TilemapMouseAdapter tma = new TilemapMouseAdapter(view, terrainModel, selectionModel);
 		addMouseMotionListener(tma);
@@ -127,8 +128,17 @@ public class ExampleComponent extends JComponent
 
 		List<Tile> visibleTiles = terrainModel.getTilesInRect(worldX0, worldY0, worldX1, worldY1);
 
+		AffineTransform oldAt = g2d.getTransform();
+
+		AffineTransform at = new AffineTransform();
+		at.translate(view.worldXToScreenX(0), view.worldYToScreenY(0));
+		at.scale(view.getZoom(), view.getZoom());
+		g2d.setTransform(at);
+		
 		tileRendererDefault.drawTiles(g2d, visibleTiles);
 		tileRendererGrid.drawTiles(g2d, visibleTiles);
 		tileRendererCursor.drawTiles(g2d, selectionModel.getSelection());
+		
+		g2d.setTransform(oldAt);
 	}
 }

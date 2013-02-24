@@ -39,11 +39,10 @@ public class TileRendererBlending extends AbstractTileRenderer
 
 	/**
 	 * @param terrainModel
-	 * @param view2
 	 */
-	public TileRendererBlending(TerrainModel terrainModel, TileSet tileset, Viewport view)
+	public TileRendererBlending(TerrainModel terrainModel, TileSet tileset)
 	{
-		super(terrainModel, tileset, view);
+		super(terrainModel, tileset);
 		
 		this.indexProvider = new IndexProvider(terrainModel, tileset);
 	}

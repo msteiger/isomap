@@ -35,21 +35,20 @@ public class TileRendererCursor extends AbstractTileRenderer
 	/**
 	 * @param gridTile the grid tile index
 	 */
-	public TileRendererCursor(TerrainModel terrainModel, TileSet tileset, Viewport view)
+	public TileRendererCursor(TerrainModel terrainModel, TileSet tileset)
 	{
-		super(terrainModel, tileset, view);
+		super(terrainModel, tileset);
 	}
 
 	public void drawTiles(Graphics2D g, Collection<Tile> hoveredTiles)
 	{
 		TileSet tileset = getTileset();
 		TerrainModel terrainModel = getTerrainModel();
-		Viewport view = getView();
 		
 		int imgWidth = tileset.getTileWidth();
 		int imgHeight = tileset.getTileHeight();
 
-		float size = (float) (9.0 * view.getZoom());
+		float size = 12.0f;
 		g.setFont(g.getFont().deriveFont(size));
 		for (Tile tile : hoveredTiles)
 		{
@@ -61,18 +60,13 @@ public class TileRendererCursor extends AbstractTileRenderer
 			int worldX = terrainModel.getWorldX(mapX, mapY);
 			int worldY = terrainModel.getWorldY(mapX, mapY);
 
-			int dx1 = view.worldXToScreenX(worldX);
-			int dy1 = view.worldYToScreenY(worldY);
-			int dx2 = view.worldXToScreenX(worldX + imgWidth);
-			int dy2 = view.worldYToScreenY(worldY + imgHeight);
-
 			g.setColor(Color.WHITE);
 			FontMetrics fm = g.getFontMetrics();
 			
 			String str = String.format("%d / %d", mapX, mapY);
 		
-			int tx = (dx2+dx1 - fm.stringWidth(str)) / 2;
-			int ty = (dy2+dy1 + fm.getAscent()) / 2;
+			int tx = worldX + (imgWidth - fm.stringWidth(str)) / 2;
+			int ty = worldY + (imgHeight + fm.getAscent()) / 2;
 			g.drawString(str, tx, ty);
 		}
 
