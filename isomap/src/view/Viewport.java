@@ -25,8 +25,8 @@ import java.util.Observable;
  */
 public class Viewport extends Observable
 {
-	private int transX = 0;
-	private int transY = 0;
+	private double transX = 0;
+	private double transY = 0;
 	private double zoom = 1;
 	private int zoomLevel = 0;
 	
@@ -71,13 +71,19 @@ public class Viewport extends Observable
 	{
 		int worldX = screenXToWorldX(screenX);
 		int worldY = screenYToWorldY(screenY);
-		double zoom1 = zoom;
 		
-		zoomLevel += dz;
-		zoom = Math.pow(2, zoomLevel);
+		transX -= worldX * zoom;
+		transY -= worldY * zoom;
 
-		transX = (int) (transX + worldX * zoom - worldX * zoom1);
-		transY = (int) (transY + worldY * zoom - worldY * zoom1);
+		zoomLevel += dz;
+		
+		// this doesn't make any sense,
+		// but irrational numbers seem to work best
+		// with AffineTransform
+		zoom = Math.exp(zoomLevel / Math.E);
+
+		transX += worldX * zoom;
+		transY += worldY * zoom;
 		
 		setChanged();
 		notifyObservers();
