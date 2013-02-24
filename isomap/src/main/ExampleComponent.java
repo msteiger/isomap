@@ -24,10 +24,12 @@ import io.TileSetBuilderWesnoth;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.swing.JComponent;
 
@@ -35,7 +37,9 @@ import terrain.HexTerrainModel;
 import terrain.TerrainType;
 import terrain.Tile;
 import tiles.HexTileSet;
-import view.TileRenderer;
+import view.TileRendererDefault;
+import view.TileRendererCursor;
+import view.TileRendererGrid;
 import view.Viewport;
 
 import common.GridData;
@@ -51,7 +55,9 @@ public class ExampleComponent extends JComponent
 {
 	private static final long serialVersionUID = 6701940511292511047L;
 
-	private TileRenderer tileRenderer;
+	private TileRendererDefault tileRendererDefault;
+	private TileRendererGrid tileRendererGrid;
+	private TileRendererCursor tileRendererCursor;
 
 	private HexTerrainModel terrainModel;
 	private HexTileSet tileset;
@@ -86,7 +92,9 @@ public class ExampleComponent extends JComponent
 
 		selectionModel.addObserver(new RepaintingObserver(this));
 		
-		tileRenderer = new TileRenderer(terrainModel, tileset, view);
+		tileRendererDefault = new TileRendererDefault(terrainModel, tileset, view);
+		tileRendererGrid = new TileRendererGrid(terrainModel, tileset, view);
+		tileRendererCursor = new TileRendererCursor(terrainModel, tileset, view);
 
 		TilemapMouseAdapter tma = new TilemapMouseAdapter(view, terrainModel, selectionModel);
 		addMouseMotionListener(tma);
@@ -97,7 +105,7 @@ public class ExampleComponent extends JComponent
 	 */
 	public void animate()
 	{
-		tileRenderer.nextFrame();
+//		tileRendererDefault.nextFrame();
 
 		repaint();
 	}
@@ -108,8 +116,19 @@ public class ExampleComponent extends JComponent
 		super.paintComponent(g);
 
 		Graphics2D g2d = (Graphics2D) g;
+		
+		Rectangle visibleRect = getVisibleRect();
 
-		tileRenderer.drawTileset(g2d, getVisibleRect());
-		tileRenderer.drawHoveredTiles(g2d, selectionModel.getSelection());
+		// convert screen to world coordinates
+		int worldX0 = view.screenXToWorldX(visibleRect.x);
+		int worldY0 = view.screenYToWorldY(visibleRect.y);
+		int worldX1 = view.screenXToWorldX(visibleRect.x + visibleRect.width);
+		int worldY1 = view.screenYToWorldY(visibleRect.y + visibleRect.height);
+
+		List<Tile> visibleTiles = terrainModel.getTilesInRect(worldX0, worldY0, worldX1, worldY1);
+
+		tileRendererDefault.drawTiles(g2d, visibleTiles);
+		tileRendererGrid.drawTiles(g2d, visibleTiles);
+		tileRendererCursor.drawTiles(g2d, selectionModel.getSelection());
 	}
 }
