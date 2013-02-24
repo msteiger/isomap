@@ -23,23 +23,15 @@ import java.awt.Composite;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import terrain.TerrainModel;
-import terrain.TerrainType;
 import terrain.Tile;
+import tiles.IndexProvider;
 import tiles.TileImage;
 import tiles.TileIndex;
-import tiles.TileIndexResolver;
 import tiles.TileSet;
-
-import common.DefaultValueMap;
-import common.GridData;
 
 /**
  * TODO Type description
@@ -50,15 +42,8 @@ public class TileRenderer
 	private Viewport view;
 	private TerrainModel terrainModel;
 	private TileSet tileset;
-	private TileIndexResolver indexResolver;
 	
-	private GridData<TileIndex> currIndices;
-	private GridData<TileIndex> nextIndices;
-	private GridData<Integer> animSteps;
-
-	private final Random random = new Random(12345);
-
-	private Map<TerrainType, Integer> maxSteps = new DefaultValueMap<>(0);
+	private IndexProvider indexProvider;
 
 	/**
 	 * @param terrainModel
@@ -69,91 +54,9 @@ public class TileRenderer
 		this.terrainModel = terrainModel;
 		this.tileset = tileset;
 		this.view = view;
-		this.indexResolver = new TileIndexResolver(tileset);
-
-		// TODO: put somewhere else
-		maxSteps.put(TerrainType.WATER, 8);
-		
-		int mapWidth = terrainModel.getMapWidth();
-		int mapHeight = terrainModel.getMapHeight();
-		
-		TileIndex invalidTile = tileset.getInvalidTileIndex();
-		
-		currIndices = new GridData<TileIndex>(mapWidth, mapHeight, invalidTile);
-		nextIndices = new GridData<TileIndex>(mapWidth, mapHeight, invalidTile);
-		animSteps = new GridData<Integer>(mapWidth, mapHeight, 0);
-		
-		for (int y = 0; y < terrainModel.getMapHeight(); y++)
-		{
-			for (int x = 0; x < terrainModel.getMapWidth(); x++)
-			{
-				Tile tile = terrainModel.getTile(x, y);
-				
-				Set<TileIndex> indices = indexResolver.getIndicesFor(tile.getTerrain(), terrainModel.getNeighbors(x, y));
-				
-				currIndices.setData(x, y, getRandom(indices));
-				
-				Integer steps = maxSteps.get(tile.getTerrain());
-				
-				if (steps > 0)
-				{
-					nextIndices.setData(x, y, getRandomOtherThan(indices, nextIndices.getData(x, y)));
-					animSteps.setData(x, y, random.nextInt(steps));
-				}
-			}
-		}
+		this.indexProvider = new IndexProvider(terrainModel, tileset);
 	}
 	
-
-	public void updateIndex(int mapX, int mapY) 
-	{
-		TileIndex index = nextIndices.getData(mapX, mapY);
-		
-		TerrainType terrain = terrainModel.getTile(mapX, mapY).getTerrain();
-		Set<TileIndex> indices = indexResolver.getIndicesFor(terrain, terrainModel.getNeighbors(mapX, mapY));
-		
-		if (indices.size() <= 1)
-			return;
-		
-		index = getRandomOtherThan(indices, index);
-		
-		nextIndices.setData(mapX, mapY, index);
-	}
-
-	private TileIndex getRandom(Set<TileIndex> indices)
-	{
-		int rand = random.nextInt(indices.size());
-		
-		Iterator<TileIndex> it = indices.iterator();
-		for (int i = 0; i < rand; i++)
-		{
-			it.next();
-		}
-		
-		return it.next();
-	}
-	
-	/**
-	 * @param indices
-	 * @param index
-	 */
-	private TileIndex getRandomOtherThan(Set<TileIndex> indices, TileIndex index)
-	{
-		List<TileIndex> list = new ArrayList<TileIndex>(indices);
-		
-		// exclude old index from the set of possible new indices
-		int rand = random.nextInt(list.size() - 1) + 1;		
-
-		// oldPos can be -1 if the old index was not set before
-		int oldPos = list.indexOf(index);
-		
-		// but rand is always in [1..size] so the sum is at least 0
-		index = list.get((oldPos + rand) % list.size());
-		
-		return index;
-	}
-
-
 	/**
 	 * @param g
 	 */
@@ -174,8 +77,8 @@ public class TileRenderer
 			int mapY = tile.getMapY();
 			int mapX = tile.getMapX();
 
-			TileIndex currIndex = currIndices.getData(mapX, mapY); 
-			TileIndex nextIndex = nextIndices.getData(mapX, mapY);
+			TileIndex currIndex = indexProvider.getCurrentIndex(mapX, mapY); 
+			TileIndex nextIndex = indexProvider.getNextIndex(mapX, mapY);
 
 			TileIndex invalid = tileset.getInvalidTileIndex();
 
@@ -183,8 +86,8 @@ public class TileRenderer
 			
 			if (nextIndex != invalid)
 			{
-				Integer step = animSteps.getData(mapX, mapY);
-				Integer maxStep = maxSteps.get(tile.getTerrain());
+				Integer step = indexProvider.getAnimStep(mapX, mapY);
+				Integer maxStep = indexProvider.getAnimSteps(tile.getTerrain());
 				
 				float alpha = (float)step / maxStep;
 				
@@ -198,7 +101,7 @@ public class TileRenderer
 				g.setComposite(oldComp);
 			}
 			
-			Set<TileIndex> indices = indexResolver.getOverlaysFor(tile.getTerrain(), terrainModel.getNeighbors(mapX, mapY));
+			Set<TileIndex> indices = indexProvider.getOverlaysFor(tile.getTerrain(), terrainModel.getNeighbors(mapX, mapY));
 			
 			for (TileIndex overlay : indices)
 			{
@@ -285,31 +188,7 @@ public class TileRenderer
 	 */
 	public void nextFrame()
 	{
-		for (int y = 0; y < terrainModel.getMapHeight(); y++)
-		{
-			for (int x = 0; x < terrainModel.getMapWidth(); x++)
-			{
-				Tile tile = terrainModel.getTile(x, y);
-				Integer maxStep = maxSteps.get(tile.getTerrain());
-
-				if (maxStep > 0)
-				{
-					Integer step = animSteps.getData(x, y);
-					int nextStep = step + 1;
-
-					if (nextStep >= maxStep)
-					{
-						nextStep = 0;
-						
-						TileIndex index = nextIndices.getData(x, y);
-						currIndices.setData(x, y, index);
-						updateIndex(x, y);
-					}
-
-					animSteps.setData(x, y, Integer.valueOf(nextStep));
-				}
-			}
-		}
+		indexProvider.nextFrame();
 		
 	}
 
