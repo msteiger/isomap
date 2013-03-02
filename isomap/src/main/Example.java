@@ -19,12 +19,16 @@ package main;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.Paths;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import datastores.DataStore;
+import datastores.DataStoreFactory;
 
 /**
  * TODO Type description
@@ -36,7 +40,9 @@ public class Example
 
 	public static void main(String[] args) throws Exception
 	{
-		final ExampleComponent comp = new ExampleComponent();
+		DataStore dao = DataStoreFactory.openLocalDao(Paths.get("data/wesnoth/images/terrain"));
+		
+		final ExampleComponent comp = new ExampleComponent(dao);
 
 		Timer timer = new Timer(100, new ActionListener()
 		{

@@ -19,14 +19,6 @@ package tiles;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO Type description
@@ -34,9 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 public class TileImage
 {
-	private static final Logger log = LoggerFactory.getLogger(TileImage.class);
-	
-	private final File imageFile;		// required for serialization
 	private BufferedImage image;
 	private final int overlapLeft;
 	private final int overlapTop;
@@ -50,7 +39,7 @@ public class TileImage
 	 * @param tileWidth
 	 * @param tileHeight
 	 */
-	public TileImage(File image, int tileWidth, int tileHeight)
+	public TileImage(BufferedImage image, int tileWidth, int tileHeight)
 	{
 		this(image, tileWidth, tileHeight, 0, 0, 0, 0);
 	}
@@ -62,7 +51,7 @@ public class TileImage
 	 * @param overlapLeft
 	 * @param overlapTop
 	 */
-	public TileImage(File image, int tileWidth, int tileHeight, int overlapLeft, int overlapTop)
+	public TileImage(BufferedImage image, int tileWidth, int tileHeight, int overlapLeft, int overlapTop)
 	{
 		this(image, tileWidth, tileHeight, overlapLeft, overlapTop, 0, 0);
 	}
@@ -74,25 +63,15 @@ public class TileImage
 	 * @param overlapRight
 	 * @param overlapBottom
 	 */
-	public TileImage(File imageFile, int tileWidth, int tileHeight, int overlapLeft, int overlapTop, int overlapRight, int overlapBottom)
+	public TileImage(BufferedImage image, int tileWidth, int tileHeight, int overlapLeft, int overlapTop, int overlapRight, int overlapBottom)
 	{
-		this.imageFile = imageFile;
+		this.image = image;
 		this.tileWidth = tileWidth;
 		this.tileHeight = tileHeight;
 		this.overlapLeft = overlapLeft;
 		this.overlapTop = overlapTop;
 		this.overlapRight = overlapRight;
 		this.overlapBottom = overlapBottom;
-
-		try
-		{
-			this.image = ImageIO.read(new FileInputStream(imageFile));
-		}
-		catch (IOException e)
-		{
-			log.error("Could not read image file", e);
-			this.image = new BufferedImage(getTileImageWidth(), getTileImageHeight(), BufferedImage.TYPE_INT_ARGB);
-		}
 	}
 
 	/**
@@ -101,14 +80,6 @@ public class TileImage
 	public Image getImage()
 	{
 		return image;
-	}
-
-	/**
-	 * @return the imageFile
-	 */
-	public File getImageFile()
-	{
-		return imageFile;
 	}
 
 	public int getTileImageX(TileIndex index)
@@ -213,7 +184,7 @@ public class TileImage
 	@Override
 	public String toString()
 	{
-		return "TileImage [" + imageFile + ", (" + overlapLeft + ", " + overlapTop + ", " + overlapRight
+		return "TileImage [(" + overlapLeft + ", " + overlapTop + ", " + overlapRight
 				+ ", " + overlapBottom + "), (" + tileWidth + ", " + tileHeight + ")]";
 	}
 	

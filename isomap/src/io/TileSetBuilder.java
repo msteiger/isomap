@@ -17,8 +17,10 @@
 
 package io;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,11 +32,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import common.OctDirection;
+import javax.imageio.ImageIO;
 
 import terrain.TerrainType;
 import tiles.TileIndexGroup;
 import tiles.TileSet;
+
+import common.OctDirection;
 
 
 
@@ -86,7 +90,8 @@ public class TileSetBuilder
 
 		TileSet ts = new TileSet(54, 28);
 
-		ts.addImage(new File("data/tileset.png"), 0, 10, 0, 0);
+		BufferedImage tilesetImage = ImageIO.read(new File("data/tileset.png"));
+		ts.addImage(tilesetImage, 0, 10, 0, 0);
 		ts.setCursorTileIndex(0);
 		ts.setInvalidTileIndex(33 * 8);
 		

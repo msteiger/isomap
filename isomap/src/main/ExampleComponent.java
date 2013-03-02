@@ -34,6 +34,8 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+import datastores.DataStore;
+
 import terrain.HexTerrainModel;
 import terrain.TerrainType;
 import terrain.Tile;
@@ -70,7 +72,7 @@ public class ExampleComponent extends JComponent
 	 * Setup everything
 	 * @throws IOException if some data cannot be read
 	 */
-	public ExampleComponent() throws IOException
+	public ExampleComponent(DataStore dao) throws IOException
 	{
 		InputStream terrainDataStream = new FileInputStream("data/example.txt");
 		TerrainLoader terrainLoader = new TerrainLoader();
@@ -79,7 +81,7 @@ public class ExampleComponent extends JComponent
 //		TileSetBuilder tileSetBuilder = new TileSetBuilder();
 //		tileset = tileSetBuilder.readFromStream(new FileInputStream("data/treasurefleet.tsd"));
 
-		TileSetBuilderWesnoth tb = new TileSetBuilderWesnoth();
+		TileSetBuilderWesnoth tb = new TileSetBuilderWesnoth(dao);
 		tileset = tb.read();
 
 		terrainModel = new HexTerrainModel(terrainData, tileset);

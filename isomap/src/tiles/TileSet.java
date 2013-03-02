@@ -17,7 +17,7 @@
 
 package tiles;
 
-import java.io.File;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import common.OctDirection;
-
 import terrain.TerrainType;
+
+import common.OctDirection;
 
 /**
  * TODO Type description
@@ -53,7 +53,7 @@ public class TileSet
 		this.tileHeight = tileHeight;
 	}
 	
-	public void addImage(File img, int overlapLeft, int overlapTop, int overlapRight, int overlapBottom)
+	public void addImage(BufferedImage img, int overlapLeft, int overlapTop, int overlapRight, int overlapBottom)
 	{
 		TileImage tileImage = new TileImage(img, tileWidth, tileHeight, overlapLeft, overlapTop, overlapRight, overlapBottom);
 		
