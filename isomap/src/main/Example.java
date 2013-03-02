@@ -19,6 +19,7 @@ package main;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.nio.file.Paths;
 
 import javax.swing.JFrame;
@@ -27,6 +28,7 @@ import javax.swing.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import datastores.CachingDataStore;
 import datastores.DataStore;
 import datastores.DataStoreFactory;
 
@@ -40,9 +42,12 @@ public class Example
 
 	public static void main(String[] args) throws Exception
 	{
-		DataStore dao = DataStoreFactory.openLocalDao(Paths.get("data/wesnoth/images/terrain"));
+		DataStore webDataStore = DataStoreFactory.getWebDao(new URL("http://msteiger.bplaced.net/bfw/data/core/images/terrain"));
+		DataStore localDataStore = DataStoreFactory.createLocalDao(Paths.get("data/wesnoth/images/terrain"));
 		
-		final ExampleComponent comp = new ExampleComponent(dao);
+		DataStore cachingDataStore = new CachingDataStore(webDataStore, localDataStore);
+		
+		final ExampleComponent comp = new ExampleComponent(cachingDataStore);
 
 		Timer timer = new Timer(100, new ActionListener()
 		{
