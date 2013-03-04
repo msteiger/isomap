@@ -28,12 +28,17 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * TODO Type description
  * @author Martin Steiger
  */
 public class WmlReader
 {
+	private static final Logger log = LoggerFactory.getLogger(WmlReader.class);
+	
 	private BufferedReader reader;
 
 	private Queue<String> tokens = new LinkedList<>();
@@ -107,8 +112,8 @@ public class WmlReader
 					line = line.substring(0, commentIndex);
 				}
 
-				Pattern startTagPattern = Pattern.compile("\\s*\\[(\\w+)\\]");
-				Pattern endTagPattern = Pattern.compile("\\s*\\[/(\\w+)\\]");
+				Pattern startTagPattern = Pattern.compile("\\s*\\[(\\w+)\\]");	// whitespace [group1]
+				Pattern endTagPattern = Pattern.compile("\\s*\\[/(\\w+)\\]");	// whitespace [/group1]
 
 				line = processSingleToken(line, startTagPattern, WmlTokenType.START_TAG);
 				line = processSingleToken(line, endTagPattern, WmlTokenType.END_TAG);
@@ -126,7 +131,7 @@ public class WmlReader
 			
 			if (line.length() > 0)
 			{
-				System.out.println("ERROR parsing " + line);
+				log.warn("Unparsed content : " + line);
 			}
 		}
 	}
@@ -136,8 +141,9 @@ public class WmlReader
 	 * @param kvpTagPattern
 	 * @return
 	 */
-	private String processAttributeToken(String text)
+	private String processAttributeToken(String text) throws IOException
 	{
+		// whitespace WORD whitespace = whitespace ANYTHING
 		final Pattern pattern = Pattern.compile("\\s*(\\w+)\\s*=\\s*(.+)");
 
 		Matcher mTag = pattern.matcher(text);
@@ -150,6 +156,31 @@ public class WmlReader
 
 			tokens.offer(keyToken);
 			tokenTypes.offer(WmlTokenType.KEY);
+			
+			if (valToken.startsWith("_"))
+			{
+				// set TRANSLATE flag 
+				valToken = valToken.substring(1).trim();
+			}
+			
+			if (valToken.startsWith("\""))
+			{
+				valToken = valToken.substring(1);
+				
+				while (!valToken.contains("\""))
+				{
+					String nextLine = reader.readLine();
+					
+					if (nextLine == null)
+						throw new IOException("End of file reached before \" was encountered");
+					
+					valToken += "\n" + nextLine;
+				}
+				
+				int indexQuote = valToken.indexOf('"');
+				text += valToken.substring(indexQuote + 1);		// add text after the "
+				valToken = valToken.substring(0, indexQuote);
+			}
 			
 			tokens.offer(valToken);
 			tokenTypes.offer(WmlTokenType.VALUE);
