@@ -18,9 +18,12 @@
 package datastores.test;
 
 import io.wml.WmlReader;
+import io.wml.WmlTerrainGraphicsParser;
+import io.wml.WmlTerrainParser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -37,7 +40,9 @@ public class WmlParserTest
 	{
 		try
 		{
-			formatContent(System.out);
+		//	formatContent(System.out);
+//			WmlTerrainParser.parseWmlTerrain(new FileInputStream("data/wesnoth/terrain.cfg"));
+			WmlTerrainGraphicsParser.parseWml(new FileInputStream("data/wesnoth/terrain-graphics_unpacked.cfg"));
 		}
 		catch(IOException e)
 		{
@@ -51,7 +56,7 @@ public class WmlParserTest
 	 */
 	private static void formatContent(PrintStream w) throws IOException
 	{
-		File name = new File("data/wesnoth/terrain-graphics_unpacked.cfg");
+		File name = new File("data/wesnoth/terrain.cfg");
 		FileInputStream stream = new FileInputStream(name);
 		WmlReader wmlParser = new WmlReader(stream);
 

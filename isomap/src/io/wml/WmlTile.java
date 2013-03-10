@@ -17,34 +17,29 @@
 
 package io.wml;
 
-/**
- * TODO Type description
- * @author Martin Steiger
- */
-public enum WmlTokenType
+public class WmlTile 
 {
-	/**
-	 * Indicates an start tag
-	 */
-	START_TAG,
-	/**
-	 * Indicates an end element
-	 */
-	END_TAG,
+	private Integer pos;
+	private String type;
+	private Integer layer;
 
-	/**
-	 * Indicates a key
-	 */
-	KEY,
-	
-	/**
-	 * Indicates a value
-	 */
-	VALUE,
-	
-	/**
-	 * Indicates a Entity Declaration
-	 */
-	COMMENT,
+	public void setType(String type) 
+	{
+		this.type = type;
+	}
+
+	public void setPos(Integer pos) 
+	{
+		this.pos = pos;
+	}
+
+	public void removeFlag(String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setLayer(Integer layer) {
+		this.layer = layer;
+	}
 
 }
