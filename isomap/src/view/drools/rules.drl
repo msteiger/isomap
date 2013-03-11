@@ -1,0 +1,18 @@
+package facts
+
+import java.util.List;
+import common.GridData
+import terrain.Tile
+import tiles.TileIndex
+
+global GridData indexData
+global TileIndex invalidTile
+
+rule "Your First Rule"
+    when
+        $tile : Tile($x : mapX, $y : mapY)
+    then
+        List<TileIndex> list = (List)indexData.getData($x, $y);
+        list.add(invalidTile);
+end
+

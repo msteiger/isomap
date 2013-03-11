@@ -34,20 +34,20 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-import datastores.DataStore;
-
 import terrain.HexTerrainModel;
 import terrain.TerrainType;
 import terrain.Tile;
 import tiles.HexTileSet;
-import view.TileRendererDefault;
 import view.TileRendererCursor;
 import view.TileRendererGrid;
 import view.Viewport;
+import view.drools.TileRendererDrools;
 
 import common.GridData;
 import common.RepaintingObserver;
 import common.SelectionModel;
+
+import datastores.DataStore;
 
 /**
  * A simple component that loads the terrain and the tileset,
@@ -58,7 +58,7 @@ public class ExampleComponent extends JComponent
 {
 	private static final long serialVersionUID = 6701940511292511047L;
 
-	private TileRendererDefault tileRendererDefault;
+	private TileRendererDrools tileRenderer;
 	private TileRendererGrid tileRendererGrid;
 	private TileRendererCursor tileRendererCursor;
 
@@ -94,8 +94,8 @@ public class ExampleComponent extends JComponent
 		addMouseWheelListener(ma);
 
 		selectionModel.addObserver(new RepaintingObserver(this));
-		
-		tileRendererDefault = new TileRendererDefault(terrainModel, tileset);
+
+		tileRenderer = new TileRendererDrools(terrainModel, tileset);
 		tileRendererGrid = new TileRendererGrid(terrainModel, tileset);
 		tileRendererCursor = new TileRendererCursor(terrainModel, tileset);
 
@@ -137,7 +137,7 @@ public class ExampleComponent extends JComponent
 		at.scale(view.getZoom(), view.getZoom());
 		g2d.setTransform(at);
 		
-		tileRendererDefault.drawTiles(g2d, visibleTiles);
+		tileRenderer.drawTiles(g2d, visibleTiles);
 		tileRendererGrid.drawTiles(g2d, visibleTiles);
 		tileRendererCursor.drawTiles(g2d, selectionModel.getSelection());
 		
