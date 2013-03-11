@@ -17,29 +17,159 @@
 
 package io.wml;
 
-public class WmlTile 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * @author Martin Steiger
+ */
+public class WmlTile
 {
 	private Integer pos;
 	private String type;
 	private Integer layer;
+	private WmlImage image;
+	private int x, y;
+	
+	private final List<String> requiredFlags = new ArrayList<>();
+	private final List<String> excludingFlags = new ArrayList<>();
+	private final List<String> setFlags = new ArrayList<>();
 
-	public void setType(String type) 
+	/**
+	 * @return the x
+	 */
+	public int getX()
+	{
+		return x;
+	}
+
+	/**
+	 * @param x the x to set
+	 */
+	public void setX(int x)
+	{
+		this.x = x;
+	}
+
+	/**
+	 * @return the y
+	 */
+	public int getY()
+	{
+		return y;
+	}
+
+	/**
+	 * @param y the y to set
+	 */
+	public void setY(int y)
+	{
+		this.y = y;
+	}
+
+	/**
+	 * @return the image
+	 */
+	public WmlImage getImage()
+	{
+		return image;
+	}
+
+	public void setType(String type)
 	{
 		this.type = type;
 	}
 
-	public void setPos(Integer pos) 
+	public void setPos(Integer pos)
 	{
 		this.pos = pos;
 	}
 
-	public void removeFlag(String value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setLayer(Integer layer) {
+	public void setLayer(Integer layer)
+	{
 		this.layer = layer;
 	}
 
+	/**
+	 * @param image the image
+	 */
+	public void setImage(WmlImage image)
+	{
+		this.image = image;
+	}
+
+	/**
+	 * @param flags the flags
+	 */
+	public void addRequiredFlags(Collection<String> flags)
+	{
+		requiredFlags.addAll(flags);
+	}
+	/**
+	 * @param flags the flags
+	 */
+	public void addExcludingFlags(Collection<String> flags)
+	{
+		excludingFlags.addAll(flags);
+	}
+
+	/**
+	 * @param flags the flags
+	 */
+	public void addSetFlags(Collection<String> flags)
+	{
+		setFlags.addAll(flags);
+	}
+
+	/**
+	 * @return the pos
+	 */
+	public Integer getPos()
+	{
+		return pos;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType()
+	{
+		return type;
+	}
+
+	/**
+	 * @return the layer
+	 */
+	public Integer getLayer()
+	{
+		return layer;
+	}
+
+	/**
+	 * @return the requiredFlags
+	 */
+	public List<String> getRequiredFlags()
+	{
+		return Collections.unmodifiableList(requiredFlags);
+	}
+
+	/**
+	 * @return the excludingFlags
+	 */
+	public List<String> getExcludingFlags()
+	{
+		return Collections.unmodifiableList(excludingFlags);
+	}
+
+	/**
+	 * @return the setFlags
+	 */
+	public List<String> getSetFlags()
+	{
+		return Collections.unmodifiableList(setFlags);
+	}
+	
+	
 }

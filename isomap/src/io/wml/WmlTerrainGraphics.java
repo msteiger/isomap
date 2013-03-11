@@ -22,85 +22,92 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class WmlTerrainGraphics 
+import common.OctDirection;
+
+/**
+ * Represents a [terrain_graphics] element
+ * @author Martin Steiger
+ */
+public class WmlTerrainGraphics
 {
 	private final List<WmlTile> tiles = new ArrayList<>();
-
-	private int probability;
-	private String name;
-	private String type;
-	private int pos;
-	private int layer;
-
-	private String[] variations;
-
-	private Object map;
-
-	private Object rotations;
+	private final List<WmlImage> images = new ArrayList<>();
 	
-	public int getProbability() {
+	private List<OctDirection> rotations = new ArrayList<>();
+	private int probability = 100;
+	private Map<?, ?> map = Collections.emptyMap();
+
+	/**
+	 * @return the images
+	 */
+	public List<WmlImage> getImages()
+	{
+		return images;
+	}
+
+	/**
+	 * @param image the image to add
+	 */
+	public void addImage(WmlImage image)
+	{
+		images.add(image);
+	}
+
+	/**
+	 * The probability of the rule (0..100)
+	 * @return
+	 */
+	public int getProbability()
+	{
 		return probability;
 	}
 
-	public void setProbability(int probability) {
+	/**
+	 * @param probability the probability of the rule (0..100)
+	 */
+	public void setProbability(int probability)
+	{
 		this.probability = probability;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public int getPos() {
-		return pos;
-	}
-
-	public void setPos(int pos) {
-		this.pos = pos;
-	}
-
-	public int getLayer() {
-		return layer;
-	}
-
-	public void setLayer(int layer) {
-		this.layer = layer;
-	}
-
-	public void addTile(WmlTile tile) 
+	/**
+	 * @param tile the tile to add
+	 */
+	public void addTile(WmlTile tile)
 	{
 		tiles.add(tile);
 	}
 
-	public List<WmlTile> getTiles() 
+	public List<WmlTile> getTiles()
 	{
 		return Collections.unmodifiableList(tiles);
 	}
 
-	public void setVariations(String[] variations) {
-		this.variations = variations;
-	}
-
-	public void setMap(Map<Object, Object> map) {
+	public void setMap(Map<Object, Object> map)
+	{
 		this.map = map;
 	}
 
-	public void setRotations(String[] rotations) {
+	public void setRotations(List<OctDirection> rotations)
+	{
 		this.rotations = rotations;
 	}
 
-	
-	
+	/**
+	 * @return the rotations
+	 */
+	public List<OctDirection> getRotations()
+	{
+		return rotations;
+	}
 
+	/**
+	 * @return the map
+	 */
+	public Map<?, ?> getMap()
+	{
+		return map;
+	}
+
+	
 }
