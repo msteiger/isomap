@@ -20,7 +20,6 @@ package view.drools;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.drools.KnowledgeBase;
@@ -33,7 +32,6 @@ import org.drools.builder.ResourceType;
 import org.drools.definition.KnowledgePackage;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
-import org.drools.ObjectFilter;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,6 @@ import terrain.TerrainModel;
 import tiles.TileIndex;
 import tiles.TileSet;
 
-import com.google.common.collect.Lists;
 import common.GridData;
 
 /**
@@ -62,20 +59,23 @@ public class IndexProviderDrools
 	 * @param terrainModel
 	 * @param tileset
 	 */
-	public IndexProviderDrools(TerrainModel terrainModel, TileSet tileset)
+	public IndexProviderDrools(TerrainModel terrainModel, TileSetBuilderWesnoth tb)
 	{
 		this.terrainModel = terrainModel;
-		this.tileset = tileset;
+		this.tileset = tb.getTileSet();
 
 		Resource drlResource = ResourceFactory.newClassPathResource("rules.drl", this.getClass());
 
 		KnowledgeBase kbase = createKnowledgeBase(drlResource);
 		StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
 
+		ImageProviderWesnoth imgProvider = new ImageProviderWesnoth(tb);
+
 		indexData = new GridData<>(terrainModel.getMapWidth(), terrainModel.getMapHeight(), null);
 		
 		session.setGlobal("indexData", indexData);
 		session.setGlobal("invalidTile", tileset.getInvalidTileIndex());
+		session.setGlobal("imageProvider", imgProvider);
 
 		for (int y=0; y<terrainModel.getMapHeight(); y++)
 		{
@@ -87,7 +87,6 @@ public class IndexProviderDrools
 		}
 
 		session.fireAllRules();
-		
 	
 		session.dispose();  
 	}

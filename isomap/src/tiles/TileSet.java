@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import terrain.TerrainType;
+import terrain.TileInfo;
 
 import common.OctDirection;
 
@@ -35,9 +36,6 @@ import common.OctDirection;
  */
 public class TileSet
 {
-	private final int tileWidth;
-	private final int tileHeight;
-
 	private final Map<TileIndex, TileImage> images = new HashMap<>();
 	private final Map<Integer, TileIndex> indices = new HashMap<>();
 	private final List<TileIndexGroup> tigs = new ArrayList<TileIndexGroup>();
@@ -45,17 +43,24 @@ public class TileSet
 	private TileIndex cursorTileIndex;
 	private TileIndex invalidTileIndex;
 	private TileIndex gridTileIndex;
+	private TileInfo info;
 	
-	
-	public TileSet(int tileWidth, int tileHeight)
+	/**
+	 * @param info
+	 */
+	public TileSet(TileInfo info)
 	{
-		this.tileWidth = tileWidth;
-		this.tileHeight = tileHeight;
+		this.info = info;
+	}
+
+	public void addImage(BufferedImage img)
+	{
+		addImage(img, 0, 0, 0, 0);
 	}
 	
 	public void addImage(BufferedImage img, int overlapLeft, int overlapTop, int overlapRight, int overlapBottom)
 	{
-		TileImage tileImage = new TileImage(img, tileWidth, tileHeight, overlapLeft, overlapTop, overlapRight, overlapBottom);
+		TileImage tileImage = new TileImage(img, getTileWidth(), getTileHeight(), overlapLeft, overlapTop, overlapRight, overlapBottom);
 		
 		int tileCount = tileImage.getTileCount();
 		int firstIndex = indices.size();
@@ -90,12 +95,12 @@ public class TileSet
 
 	public int getTileWidth()
 	{
-		return tileWidth;
+		return info.getTileWidth();
 	}
 	
 	public int getTileHeight()
 	{
-		return tileHeight;
+		return info.getTileHeight();
 	}
 
 	public List<TileIndexGroup> getIndexGroups() 

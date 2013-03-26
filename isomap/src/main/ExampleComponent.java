@@ -20,7 +20,6 @@ package main;
 import input.TilemapMouseAdapter;
 import input.ViewportMouseAdapter;
 import io.TerrainLoader;
-import io.TileSetBuilderWesnoth;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -35,13 +34,14 @@ import java.util.List;
 import javax.swing.JComponent;
 
 import terrain.HexTerrainModel;
+import terrain.HexTileInfo;
 import terrain.TerrainType;
 import terrain.Tile;
-import tiles.HexTileSet;
 import view.TileRendererCursor;
 import view.TileRendererGrid;
 import view.Viewport;
 import view.drools.TileRendererDrools;
+import view.drools.TileSetBuilderWesnoth;
 
 import common.GridData;
 import common.RepaintingObserver;
@@ -63,7 +63,7 @@ public class ExampleComponent extends JComponent
 	private TileRendererCursor tileRendererCursor;
 
 	private HexTerrainModel terrainModel;
-	private HexTileSet tileset;
+//	private HexTileSet tileset;
 
 	private Viewport view = new Viewport();
 	private SelectionModel<Tile> selectionModel = new SelectionModel<Tile>();
@@ -82,9 +82,8 @@ public class ExampleComponent extends JComponent
 //		tileset = tileSetBuilder.readFromStream(new FileInputStream("data/treasurefleet.tsd"));
 
 		TileSetBuilderWesnoth tb = new TileSetBuilderWesnoth(dao);
-		tileset = tb.read();
 
-		terrainModel = new HexTerrainModel(terrainData, tileset);
+		terrainModel = new HexTerrainModel(terrainData, tb.getInfo());
 
 		MouseAdapter ma = new ViewportMouseAdapter(view);
 		view.addObserver(new RepaintingObserver(this));
@@ -95,9 +94,9 @@ public class ExampleComponent extends JComponent
 
 		selectionModel.addObserver(new RepaintingObserver(this));
 
-		tileRenderer = new TileRendererDrools(terrainModel, tileset);
-		tileRendererGrid = new TileRendererGrid(terrainModel, tileset);
-		tileRendererCursor = new TileRendererCursor(terrainModel, tileset);
+		tileRenderer = new TileRendererDrools(terrainModel, tb);
+		tileRendererGrid = new TileRendererGrid(terrainModel, tb.getTileSet());
+		tileRendererCursor = new TileRendererCursor(terrainModel, tb.getTileSet());
 
 		TilemapMouseAdapter tma = new TilemapMouseAdapter(view, terrainModel, selectionModel);
 		addMouseMotionListener(tma);
@@ -138,8 +137,8 @@ public class ExampleComponent extends JComponent
 		g2d.setTransform(at);
 		
 		tileRenderer.drawTiles(g2d, visibleTiles);
-		tileRendererGrid.drawTiles(g2d, visibleTiles);
-		tileRendererCursor.drawTiles(g2d, selectionModel.getSelection());
+//		tileRendererGrid.drawTiles(g2d, visibleTiles);
+//		tileRendererCursor.drawTiles(g2d, selectionModel.getSelection());
 		
 		g2d.setTransform(oldAt);
 	}

@@ -23,7 +23,6 @@ import java.util.List;
 import terrain.TerrainModel;
 import terrain.Tile;
 import tiles.TileIndex;
-import tiles.TileSet;
 import view.AbstractTileRenderer;
 
 /**
@@ -38,11 +37,11 @@ public class TileRendererDrools extends AbstractTileRenderer
 	 * @param terrainModel
 	 * @param view2
 	 */
-	public TileRendererDrools(TerrainModel terrainModel, TileSet tileset)
+	public TileRendererDrools(TerrainModel terrainModel, TileSetBuilderWesnoth tb)
 	{
-		super(terrainModel, tileset);
+		super(terrainModel, tb.getTileSet());
 		
-		this.indexProvider = new IndexProviderDrools(terrainModel, tileset);
+		this.indexProvider = new IndexProviderDrools(terrainModel, tb);
 	}
 	
 	public void drawTiles(Graphics2D g, List<Tile> visibleTiles)

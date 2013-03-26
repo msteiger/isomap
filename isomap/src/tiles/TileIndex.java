@@ -58,6 +58,31 @@ public class TileIndex
 	{
 		return "TileIndex [" + globalIndex + ", " + localIndex + "]";
 	}
-	
-	
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + globalIndex;
+		result = prime * result + localIndex;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TileIndex other = (TileIndex) obj;
+		if (globalIndex != other.globalIndex)
+			return false;
+		if (localIndex != other.localIndex)
+			return false;
+		return true;
+	}
 }

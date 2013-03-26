@@ -18,9 +18,7 @@
 package datastores.test;
 
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,11 +31,16 @@ import org.drools.builder.KnowledgeBuilderError;
 import org.drools.builder.KnowledgeBuilderErrors;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.compiler.ReturnValueDescr;
 import org.drools.definition.KnowledgePackage;
 import org.drools.io.ResourceFactory;
 import org.drools.lang.DrlDumper;
 import org.drools.lang.api.DescrFactory;
+import org.drools.lang.descr.AndDescr;
+import org.drools.lang.descr.BaseDescr;
+import org.drools.lang.descr.BindingDescr;
 import org.drools.lang.descr.PackageDescr;
+import org.drools.lang.descr.RuleDescr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,21 +56,26 @@ public class DroolsTest
 	{
 		PackageDescr pkg = DescrFactory.newPackage()
 		    .name("facts")
-		    .attribute( "dialect" ).value( "mvel" ).end()
+		    .newImport().target("java.util.List").end()
 		    .newImport().target("common.GridData").end()
 		    .newImport().target("terrain.Tile").end()
-		    .newGlobal().type("common.GridData").identifier("indexData").end()
+		    .newImport().target("tiles.TileIndex").end()
+		    .newGlobal().type("GridData").identifier("indexData").end()
+		    .newGlobal().type("TileIndex").identifier("invalidTile").end()
             // rule
-            .newRule().name( "test" )
-                .lhs().pattern("$tile : Tile").constraint("").end()
+            .newRule()
+            	.name( "test" )
+            	.attribute("dialect", "mvel")
+                .lhs().pattern("$tile : Tile").constraint("$x : mapX, $y : mapY").end()
                 .end()
-                .rhs( "System.out.println(\"Hello \")\n")
+                .rhs("\tList<TileIndex> list = (List)indexData.getData($x, $y);\n" +
+                		"\tlist.add(invalidTile);\n")
                 .end()
 		   .getDescr();
 	
 		compilePkgDescr(pkg);
         
-        Path drlPath = Paths.get("E:\\test.drl");
+        Path drlPath = Paths.get("test.drl");
 		String dump = new DrlDumper().dump(pkg);
 //		System.out.println(dump);
 		
@@ -76,6 +84,33 @@ public class DroolsTest
 			writer.write(dump);
 		}
 	}
+	
+//	private RuleDescr addRule()
+//	{
+//		final RuleDescr ruleDescr = new RuleDescr( "rule-1" );
+//
+//        final AndDescr lhs = new AndDescr();
+//        ruleDescr.setLhs( lhs );
+//
+//        final ColumnDescr column = new ColumnDescr( Cheese.class.getName(),
+//                                                    "stilton" );
+//        lhs.addDescr( new BaseDescr() );
+//
+//        BindingDescr fieldBindingDescr = new BindingDescr( "price",
+//                                                                     "x" );
+//        column.addDescr( fieldBindingDescr );
+//        fieldBindingDescr = new BindingDescr( "price","y" );
+//        column.addDescr( fieldBindingDescr );
+//
+//        final ReturnValueDescr returnValue = new ReturnValueDescr( "price",
+//                                                                   "==",
+//                                                                   expression );
+//        column.addDescr( returnValue );
+//
+//        ruleDescr.setConsequence( "modify(stilton);" );
+//        
+//        return ruleDescr;
+//	}
 	
 	private static Collection<KnowledgePackage> compilePkgDescr(PackageDescr pkg) 
 	{

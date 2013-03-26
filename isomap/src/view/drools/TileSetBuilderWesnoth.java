@@ -15,28 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io;
+package view.drools;
 
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import terrain.TerrainType;
-import tiles.HexTileSet;
-
-import com.google.common.collect.DiscreteDomains;
-import com.google.common.collect.Ranges;
-import common.OctDirection;
-
+import terrain.HexTileInfo;
+import tiles.TileSet;
 import datastores.DataStore;
 
 
@@ -48,24 +41,32 @@ public class TileSetBuilderWesnoth
 {
 	private static final Logger log = LoggerFactory.getLogger(TileSetBuilderWesnoth.class);
 	
-	private DataStore datastore;
-
 	private BufferedImage defaultImage;
 
+	private TileSet ts;
+
+	private HexTileInfo info;
+
+	private DataStore dao;
+	
 	/**
 	 * @param dao
 	 */
 	public TileSetBuilderWesnoth(DataStore dao)
 	{
-		this.datastore = dao;
-	}
+//		Map<OctDirection, TerrainType> borders = new HashMap<>();
 
-	public HexTileSet read()
-	{
-		Map<OctDirection, TerrainType> borders = new HashMap<>();
+		this.dao = dao;
+		
+		this.info = new HexTileInfo(72, 72, 36);
 
-		HexTileSet ts = new HexTileSet(72, 72, 36);
-		ts.addImage(loadImage("foreground.png"), 0, 0, 0, 0);
+		ts = new TileSet(info);
+
+		
+		ts.addImage(getDefaultImage(), 0, 0, 0, 0);
+		ts.setInvalidTileIndex(0);
+		
+		/*
 		ts.setCursorTileIndex(0);
 		ts.setInvalidTileIndex(0);
 		
@@ -122,18 +123,30 @@ public class TileSetBuilderWesnoth
 
 		ts.addImage(loadImage("grid.png"), 0, 0, 0, 0);
 
-		ts.setGridTileIndex(37);
-		
+		ts.setGridTileIndex(37);*/
+	}
+	
+	public TileSet getTileSet()
+	{
 		return ts;
+	}
+
+	
+	/**
+	 * @return the info
+	 */
+	public HexTileInfo getInfo()
+	{
+		return info;
 	}
 
 	/**
 	 * @return
 	 * @throws IOException
 	 */
-	private BufferedImage loadImage(String path, String... more)
+	public BufferedImage loadImage(String path, String... more)
 	{
-		try (InputStream stream = datastore.getInputStream(path, more))
+		try (InputStream stream = dao.getInputStream(path, more))
 		{
 			return ImageIO.read(stream);
 		}

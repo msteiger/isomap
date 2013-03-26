@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import tiles.HexTileSet;
 import tiles.TileSet;
 
 import com.google.common.base.Optional;
@@ -40,7 +39,7 @@ public class HexTerrainModel implements TerrainModel
 {
 	private final GridData<Tile> tiles;
 
-	private final HexTileSet tileSet;
+	private final HexTileInfo tileInfo;
 
 	private int mapWidth;
 	private int mapHeight;
@@ -49,13 +48,13 @@ public class HexTerrainModel implements TerrainModel
 	/**
 	 * @param data the terrain data
 	 */
-	public HexTerrainModel(GridData<TerrainType> terrainData, HexTileSet tileSet)
+	public HexTerrainModel(GridData<TerrainType> terrainData, HexTileInfo tileSet)
 	{
 		mapWidth = terrainData.getWidth();
 		mapHeight = terrainData.getHeight();
 
 		this.tiles = new GridData<Tile>(mapWidth, mapHeight, null);
-		this.tileSet = tileSet;
+		this.tileInfo = tileSet;
 
 		for (int y = 0; y < mapHeight; y++)
 		{
@@ -95,24 +94,24 @@ public class HexTerrainModel implements TerrainModel
 	@Override
 	public int getWorldX(int x, int y)
 	{
-		return x * (tileSet.getTopLength() + tileSet.getTileWidth()) / 2;
+		return x * (tileInfo.getTopLength() + tileInfo.getTileWidth()) / 2;
 	}
 
 	@Override
 	public int getWorldY(int x, int y)
 	{
-		return y * tileSet.getTileHeight() + (x % 2) * tileSet.getTileHeight() / 2;
+		return y * tileInfo.getTileHeight() + (x % 2) * tileInfo.getTileHeight() / 2;
 	}
 	
 	@Override
 	public Optional<Tile> getTileAtWorldPos(int x, int y)
 	{
-		double a = tileSet.getTileWidth() / 2;
-		double b = tileSet.getTileHeight() / 2;
-		double c = tileSet.getTopLength() / 2.0;
+		double a = tileInfo.getTileWidth() / 2;
+		double b = tileInfo.getTileHeight() / 2;
+		double c = tileInfo.getTopLength() / 2.0;
 		
-		x -= tileSet.getTileWidth() / 2;
-		y -= tileSet.getTileHeight() / 2;
+		x -= tileInfo.getTileWidth() / 2;
+		y -= tileInfo.getTileHeight() / 2;
 		
 		// Find out which major row and column we are on:
 	    int row = (int)(y / b);
@@ -144,12 +143,12 @@ public class HexTerrainModel implements TerrainModel
 	@Override
 	public List<Tile> getTilesInRect(int worldX0, int worldY0, int worldX1, int worldY1)
 	{
-		int tileHeight = tileSet.getTileHeight() / 2;
+		int tileHeight = tileInfo.getTileHeight() / 2;
 		
-		int avgWidth = (tileSet.getTopLength() + tileSet.getTileWidth()) / 2;
+		int avgWidth = (tileInfo.getTopLength() + tileInfo.getTileWidth()) / 2;
 		
 		// the width of one diagonal
-		int leftIn = (tileSet.getTileWidth() - tileSet.getTopLength()) / 2;
+		int leftIn = (tileInfo.getTileWidth() - tileInfo.getTopLength()) / 2;
 		
 		// this computes the map-y based on rectangular shapes 
 		// it is then independent of x - basically the inverse of getWorldY()

@@ -15,33 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package tiles;
+package terrain;
 
 /**
  * TODO Type description
  * @author Martin Steiger
  */
-public class HexTileSet extends TileSet
+public class TileInfo
 {
-	private final int topLength;
-
+	private final int tileWidth;
+	private final int tileHeight;
+	
 	/**
 	 * @param tileWidth
 	 * @param tileHeight
 	 */
-	public HexTileSet(int tileWidth, int tileHeight, int topLength)
+	public TileInfo(int tileWidth, int tileHeight)
 	{
-		super(tileWidth, tileHeight);
-		
-		this.topLength = topLength;
+		this.tileWidth = tileWidth;
+		this.tileHeight = tileHeight;
 	}
 
 	/**
-	 * @return the topLength
+	 * @return the tileWidth
 	 */
-	public int getTopLength()
+	public int getTileWidth()
 	{
-		return topLength;
+		return tileWidth;
 	}
-	
+
+	/**
+	 * @return the tileHeight
+	 */
+	public int getTileHeight()
+	{
+		return tileHeight;
+	}
 }

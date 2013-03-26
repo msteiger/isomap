@@ -20,7 +20,6 @@ package io;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,6 +34,7 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 
 import terrain.TerrainType;
+import terrain.TileInfo;
 import tiles.TileIndexGroup;
 import tiles.TileSet;
 
@@ -88,7 +88,7 @@ public class TileSetBuilder
 		InputStreamReader reader = new InputStreamReader(is, "UTF-8");
 		BufferedReader bw = new BufferedReader(reader);
 
-		TileSet ts = new TileSet(54, 28);
+		TileSet ts = new TileSet(new TileInfo(54, 28));
 
 		BufferedImage tilesetImage = ImageIO.read(new File("data/tileset.png"));
 		ts.addImage(tilesetImage, 0, 10, 0, 0);

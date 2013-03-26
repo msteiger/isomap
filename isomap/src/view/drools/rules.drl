@@ -3,16 +3,38 @@ package facts
 import java.util.List;
 import common.GridData
 import terrain.Tile
+import terrain.TerrainType
 import tiles.TileIndex
+import view.drools.ImageProviderWesnoth
 
 global GridData indexData
 global TileIndex invalidTile
+global ImageProviderWesnoth imageProvider;
 
-rule "Your First Rule"
+rule "WATER"
     when
-        $tile : Tile($x : mapX, $y : mapY)
+        $tile : Tile($x : mapX, $y : mapY, terrain == TerrainType.WATER)
     then
         List<TileIndex> list = (List)indexData.getData($x, $y);
-        list.add(invalidTile);
+        TileIndex idx = imageProvider.getImage("water/coast-tropical-A01.png");
+        list.add(idx);
 end
 
+rule "GRASS"
+    when
+        $tile : Tile($x : mapX, $y : mapY, terrain == TerrainType.GRASS)
+    then
+        List<TileIndex> list = (List)indexData.getData($x, $y);
+        TileIndex idx = imageProvider.getImage("grass/green.png");
+        list.add(idx);
+end
+
+rule "SetInvalidTile"
+	salience -1
+    when
+        $tile : Tile($x : mapX, $y : mapY);
+    then
+        List<TileIndex> list = (List)indexData.getData($x, $y);
+        if (list.isEmpty())
+	       	list.add(invalidTile);
+end
