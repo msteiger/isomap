@@ -22,7 +22,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.Collections;
 import java.util.Set;
 
-import terrain.TerrainModel;
+import terrain.TileModel;
 import terrain.Tile;
 import view.Viewport;
 
@@ -37,7 +37,7 @@ import common.SelectionModel;
 public class TilemapMouseAdapter implements MouseMotionListener
 {
     private final Viewport view;
-    private final TerrainModel terrainModel;
+    private final TileModel terrainModel;
     private final SelectionModel<Tile> selectionModel;
 
     /**
@@ -45,7 +45,7 @@ public class TilemapMouseAdapter implements MouseMotionListener
      * @param terrainModel
      * @param selectionModel
      */
-    public TilemapMouseAdapter(Viewport view, TerrainModel terrainModel, SelectionModel<Tile> selectionModel)
+    public TilemapMouseAdapter(Viewport view, TileModel terrainModel, SelectionModel<Tile> selectionModel)
     {
         this.view = view;
         this.terrainModel = terrainModel;

@@ -20,7 +20,7 @@ package view;
 import java.awt.Graphics2D;
 import java.util.List;
 
-import terrain.TerrainModel;
+import terrain.TileModel;
 import terrain.Tile;
 import tiles.TileSet;
 
@@ -33,9 +33,9 @@ public class TileRendererGrid extends AbstractTileRenderer
     /**
      * @param gridTile the grid tile index
      */
-    public TileRendererGrid(TerrainModel terrainModel, TileSet tileset)
+    public TileRendererGrid(TileModel terrainModel, TileSet tileset)
     {
-        super(terrainModel, tileset);
+        super(null, terrainModel, tileset);
     }
 
     public void drawTiles(Graphics2D g, List<Tile> visibleTiles)
@@ -48,5 +48,5 @@ public class TileRendererGrid extends AbstractTileRenderer
             drawTile(g, getTileset().getGridTileIndex(), mapX, mapY);
         }
     }
-    
+
 }

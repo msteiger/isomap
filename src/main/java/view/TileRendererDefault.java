@@ -18,10 +18,15 @@
 package view;
 
 import java.awt.Graphics2D;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import terrain.TerrainModel;
+import common.GridData;
+import common.OctDirection;
+import terrain.TileModel;
+import terrain.TerrainType;
 import terrain.Tile;
 import tiles.IndexProvider;
 import tiles.TileIndex;
@@ -39,13 +44,13 @@ public class TileRendererDefault extends AbstractTileRenderer
      * @param terrainModel
      * @param view2
      */
-    public TileRendererDefault(TerrainModel terrainModel, TileSet tileset)
+    public TileRendererDefault(GridData<TerrainType> terrainData, TileModel terrainModel, TileSet tileset)
     {
-        super(terrainModel, tileset);
-        
-        this.indexProvider = new IndexProvider(terrainModel, tileset);
+        super(terrainData, terrainModel, tileset);
+
+        this.indexProvider = new IndexProvider(terrainData, terrainModel, tileset);
     }
-    
+
     public void drawTiles(Graphics2D g, List<Tile> visibleTiles)
     {
         for (Tile tile : visibleTiles)
@@ -53,11 +58,18 @@ public class TileRendererDefault extends AbstractTileRenderer
             int mapY = tile.getMapY();
             int mapX = tile.getMapX();
 
-            TileIndex currIndex = indexProvider.getCurrentIndex(mapX, mapY); 
+            TileIndex currIndex = indexProvider.getCurrentIndex(mapX, mapY);
             drawTile(g, currIndex, mapX, mapY);
-            
-            Set<TileIndex> indices = indexProvider.getOverlaysFor(tile.getTerrain(), getTerrainModel().getNeighbors(mapX, mapY));
-            
+
+            Map<OctDirection, Tile> neighbors = getTerrainModel().getNeighbors(mapX, mapY);
+            Map<OctDirection, TerrainType> terrains = new HashMap<>();
+            for (OctDirection dir : neighbors.keySet()) {
+                Tile n = neighbors.get(dir);
+                TerrainType type = terrainData.getData(n.getMapX(), n.getMapY());
+                terrains.put(dir, type);
+            }
+            Set<TileIndex> indices = indexProvider.getOverlaysFor(terrainData.getData(tile.getMapX(), tile.getMapY()), terrains);
+
             for (TileIndex overlay : indices)
             {
                 drawTile(g, overlay, mapX, mapY);

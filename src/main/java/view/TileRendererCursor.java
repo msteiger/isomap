@@ -22,7 +22,10 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.util.Collection;
 
-import terrain.TerrainModel;
+import common.GridData;
+
+import terrain.TileModel;
+import terrain.TerrainType;
 import terrain.Tile;
 import tiles.TileSet;
 
@@ -35,16 +38,13 @@ public class TileRendererCursor extends AbstractTileRenderer
     /**
      * @param gridTile the grid tile index
      */
-    public TileRendererCursor(TerrainModel terrainModel, TileSet tileset)
+    public TileRendererCursor(TileModel terrainModel, TileSet tileset)
     {
-        super(terrainModel, tileset);
+        super(null, terrainModel, tileset);
     }
 
     public void drawTiles(Graphics2D g, Collection<Tile> hoveredTiles)
     {
-        TileSet tileset = getTileset();
-        TerrainModel terrainModel = getTerrainModel();
-        
         int imgWidth = tileset.getTileWidth();
         int imgHeight = tileset.getTileHeight();
 
@@ -56,15 +56,15 @@ public class TileRendererCursor extends AbstractTileRenderer
             int mapY = tile.getMapY();
 
             drawTile(g, tileset.getCursorTileIndex(), mapX, mapY);
-            
+
             int worldX = terrainModel.getWorldX(mapX, mapY);
             int worldY = terrainModel.getWorldY(mapX, mapY);
 
             g.setColor(Color.WHITE);
             FontMetrics fm = g.getFontMetrics();
-            
+
             String str = String.format("%d / %d", mapX, mapY);
-        
+
             int tx = worldX + (imgWidth - fm.stringWidth(str)) / 2;
             int ty = worldY + (imgHeight + fm.getAscent()) / 2;
             g.drawString(str, tx, ty);

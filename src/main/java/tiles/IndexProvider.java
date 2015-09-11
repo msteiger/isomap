@@ -18,6 +18,7 @@
 package tiles;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,7 @@ import java.util.Set;
 import common.DefaultValueMap;
 import common.GridData;
 import common.OctDirection;
-
-import terrain.TerrainModel;
+import terrain.TileModel;
 import terrain.TerrainType;
 import terrain.Tile;
 
@@ -46,43 +46,51 @@ public class IndexProvider
 
     private final Random random = new Random(12345);
 
-    private Map<TerrainType, Integer> maxSteps = new DefaultValueMap<>(0);
-
-
-    private TerrainModel terrainModel;
+    private final Map<TerrainType, Integer> maxSteps = new DefaultValueMap<>(0);
+    private final TileModel terrainModel;
+    private final GridData<TerrainType> terrainData;
 
     /**
      * @param resolver
      */
-    public IndexProvider(TerrainModel terrainModel, TileSet tileset)
+    public IndexProvider(GridData<TerrainType> terrainData, TileModel terrainModel, TileSet tileset)
     {
         this.indexResolver = new TileIndexResolver(tileset);
         this.terrainModel = terrainModel;
-        
+        this.terrainData = terrainData;
+
         int mapWidth = terrainModel.getMapWidth();
         int mapHeight = terrainModel.getMapHeight();
-        
+
         // TODO: move somewhere else
         maxSteps.put(TerrainType.WATER, 8);
-        
+
         TileIndex invalidTile = tileset.getInvalidTileIndex();
-        
+
         currIndices = new GridData<TileIndex>(mapWidth, mapHeight, invalidTile);
         nextIndices = new GridData<TileIndex>(mapWidth, mapHeight, invalidTile);
         animSteps = new GridData<Integer>(mapWidth, mapHeight, 0);
-        
+
         for (int y = 0; y < terrainModel.getMapHeight(); y++)
         {
             for (int x = 0; x < terrainModel.getMapWidth(); x++)
             {
                 Tile tile = terrainModel.getTile(x, y);
-                
-                Set<TileIndex> indices = indexResolver.getIndicesFor(tile.getTerrain(), terrainModel.getNeighbors(x, y));
-                
+                TerrainType terrain = terrainData.getData(x, y);
+
+                Map<OctDirection, Tile> neighbors = terrainModel.getNeighbors(x, y);
+                Map<OctDirection, TerrainType> terrains = new HashMap<>();
+                for (OctDirection dir : neighbors.keySet()) {
+                    Tile n = neighbors.get(dir);
+                    TerrainType type = terrainData.getData(n.getMapX(), n.getMapY());
+                    terrains.put(dir, type);
+                }
+                Set<TileIndex> indices = indexResolver.getIndicesFor(terrainData.getData(x, y), terrains);
+
                 currIndices.setData(x, y, getRandom(indices));
-                
-                Integer steps = maxSteps.get(tile.getTerrain());
-                
+
+                Integer steps = maxSteps.get(terrain);
+
                 if (steps > 0)
                 {
                     nextIndices.setData(x, y, getRandomOtherThan(indices, currIndices.getData(x, y)));
@@ -90,37 +98,44 @@ public class IndexProvider
                 }
             }
         }
-        
+
     }
-    
-    private void updateIndex(int mapX, int mapY) 
+
+    private void updateIndex(int mapX, int mapY)
     {
         TileIndex index = nextIndices.getData(mapX, mapY);
-        
-        TerrainType terrain = terrainModel.getTile(mapX, mapY).getTerrain();
-        Set<TileIndex> indices = indexResolver.getIndicesFor(terrain, terrainModel.getNeighbors(mapX, mapY));
-        
+
+        TerrainType terrain = terrainData.getData(mapX, mapY);
+        Map<OctDirection, Tile> neighbors = terrainModel.getNeighbors(mapX, mapY);
+        Map<OctDirection, TerrainType> terrains = new HashMap<>();
+        for (OctDirection dir : neighbors.keySet()) {
+            Tile n = neighbors.get(dir);
+            TerrainType type = terrainData.getData(n.getMapX(), n.getMapY());
+            terrains.put(dir, type);
+        }
+        Set<TileIndex> indices = indexResolver.getIndicesFor(terrain, terrains);
+
         if (indices.size() <= 1)
             return;
-        
+
         index = getRandomOtherThan(indices, index);
-        
+
         nextIndices.setData(mapX, mapY, index);
     }
 
     private TileIndex getRandom(Set<TileIndex> indices)
     {
         int rand = random.nextInt(indices.size());
-        
+
         Iterator<TileIndex> it = indices.iterator();
         for (int i = 0; i < rand; i++)
         {
             it.next();
         }
-        
+
         return it.next();
     }
-    
+
     /**
      * @param indices
      * @param index
@@ -128,20 +143,20 @@ public class IndexProvider
     private TileIndex getRandomOtherThan(Set<TileIndex> indices, TileIndex index)
     {
         List<TileIndex> list = new ArrayList<TileIndex>(indices);
-        
+
         // exclude old index from the set of possible new indices
-        int rand = random.nextInt(list.size() - 1) + 1;        
+        int rand = random.nextInt(list.size() - 1) + 1;
 
         // oldPos can be -1 if the old index was not set before
         int oldPos = list.indexOf(index);
-        
+
         // but rand is always in [1..size] so the sum is at least 0
         index = list.get((oldPos + rand) % list.size());
-        
+
         return index;
     }
 
-    
+
     /**
      * @param mapX
      * @param mapY
@@ -182,7 +197,7 @@ public class IndexProvider
     }
 
     /**
-     * 
+     *
      */
     public void nextFrame()
     {
@@ -190,8 +205,7 @@ public class IndexProvider
         {
             for (int x = 0; x < terrainModel.getMapWidth(); x++)
             {
-                Tile tile = terrainModel.getTile(x, y);
-                Integer maxStep = maxSteps.get(tile.getTerrain());
+                Integer maxStep = maxSteps.get(terrainData.getData(x, y));
 
                 if (maxStep > 0)
                 {
@@ -201,7 +215,7 @@ public class IndexProvider
                     if (nextStep >= maxStep)
                     {
                         nextStep = 0;
-                        
+
                         TileIndex index = nextIndices.getData(x, y);
                         currIndices.setData(x, y, index);
                         updateIndex(x, y);
@@ -210,7 +224,7 @@ public class IndexProvider
                     animSteps.setData(x, y, Integer.valueOf(nextStep));
                 }
             }
-        }        
+        }
     }
 
     /**
@@ -223,5 +237,5 @@ public class IndexProvider
         return indexResolver.getOverlaysFor(terrain, neighbors);
     }
 
-    
+
 }

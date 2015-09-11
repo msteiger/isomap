@@ -36,7 +36,7 @@ import javax.swing.JComponent;
 
 import datastores.DataStore;
 
-import terrain.HexTerrainModel;
+import terrain.HexTileModel;
 import terrain.TerrainType;
 import terrain.Tile;
 import tiles.HexTileSet;
@@ -62,7 +62,7 @@ public class ExampleComponent extends JComponent
     private TileRendererGrid tileRendererGrid;
     private TileRendererCursor tileRendererCursor;
 
-    private HexTerrainModel terrainModel;
+    private HexTileModel terrainModel;
     private HexTileSet tileset;
 
     private Viewport view = new Viewport();
@@ -84,7 +84,7 @@ public class ExampleComponent extends JComponent
         TileSetBuilderWesnoth tb = new TileSetBuilderWesnoth(dao);
         tileset = tb.read();
 
-        terrainModel = new HexTerrainModel(terrainData, tileset);
+        terrainModel = new HexTileModel(terrainData.getWidth(), terrainData.getHeight(), tileset);
 
         MouseAdapter ma = new ViewportMouseAdapter(view);
         view.addObserver(new RepaintingObserver(this));
@@ -94,8 +94,8 @@ public class ExampleComponent extends JComponent
         addMouseWheelListener(ma);
 
         selectionModel.addObserver(new RepaintingObserver(this));
-        
-        tileRendererDefault = new TileRendererDefault(terrainModel, tileset);
+
+        tileRendererDefault = new TileRendererDefault(terrainData, terrainModel, tileset);
         tileRendererGrid = new TileRendererGrid(terrainModel, tileset);
         tileRendererCursor = new TileRendererCursor(terrainModel, tileset);
 
@@ -112,14 +112,14 @@ public class ExampleComponent extends JComponent
 
         repaint();
     }
-    
+
     @Override
     protected void paintComponent(Graphics g)
     {
         super.paintComponent(g);
 
         Graphics2D g2d = (Graphics2D) g;
-        
+
         Rectangle visibleRect = getVisibleRect();
 
         // convert screen to world coordinates
@@ -136,11 +136,11 @@ public class ExampleComponent extends JComponent
         at.translate(view.worldXToScreenX(0), view.worldYToScreenY(0));
         at.scale(view.getZoom(), view.getZoom());
         g2d.setTransform(at);
-        
+
         tileRendererDefault.drawTiles(g2d, visibleTiles);
         tileRendererGrid.drawTiles(g2d, visibleTiles);
         tileRendererCursor.drawTiles(g2d, selectionModel.getSelection());
-        
+
         g2d.setTransform(oldAt);
     }
 }

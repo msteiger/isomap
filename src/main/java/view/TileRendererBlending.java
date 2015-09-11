@@ -20,10 +20,15 @@ package view;
 import java.awt.AlphaComposite;
 import java.awt.Composite;
 import java.awt.Graphics2D;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import terrain.TerrainModel;
+import common.GridData;
+import common.OctDirection;
+import terrain.TileModel;
+import terrain.TerrainType;
 import terrain.Tile;
 import tiles.IndexProvider;
 import tiles.TileIndex;
@@ -40,13 +45,13 @@ public class TileRendererBlending extends AbstractTileRenderer
     /**
      * @param terrainModel
      */
-    public TileRendererBlending(TerrainModel terrainModel, TileSet tileset)
+    public TileRendererBlending(GridData<TerrainType> terrainData, TileModel terrainModel, TileSet tileset)
     {
-        super(terrainModel, tileset);
-        
-        this.indexProvider = new IndexProvider(terrainModel, tileset);
+        super(terrainData, terrainModel, tileset);
+
+        this.indexProvider = new IndexProvider(terrainData, terrainModel, tileset);
     }
-    
+
     public void drawTiles(Graphics2D g, List<Tile> visibleTiles)
     {
         for (Tile tile : visibleTiles)
@@ -54,32 +59,41 @@ public class TileRendererBlending extends AbstractTileRenderer
             int mapY = tile.getMapY();
             int mapX = tile.getMapX();
 
-            TileIndex currIndex = indexProvider.getCurrentIndex(mapX, mapY); 
+            TileIndex currIndex = indexProvider.getCurrentIndex(mapX, mapY);
             TileIndex nextIndex = indexProvider.getNextIndex(mapX, mapY);
 
             TileIndex invalid = getTileset().getInvalidTileIndex();
 
             drawTile(g, currIndex, mapX, mapY);
-            
+
+            TerrainType terrain = terrainData.getData(tile.getMapX(), tile.getMapY());
+
             if (nextIndex != invalid)
             {
                 Integer step = indexProvider.getAnimStep(mapX, mapY);
-                Integer maxStep = indexProvider.getAnimSteps(tile.getTerrain());
-                
+                Integer maxStep = indexProvider.getAnimSteps(terrain);
+
                 float alpha = (float)step / maxStep;
-                
+
                 Composite oldComp = g.getComposite();
-                
+
                 // TODO: Cache alpha composite
                 AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
-                
+
                 g.setComposite(ac);
                 drawTile(g, nextIndex, mapX, mapY);
                 g.setComposite(oldComp);
             }
-            
-            Set<TileIndex> indices = indexProvider.getOverlaysFor(tile.getTerrain(), getTerrainModel().getNeighbors(mapX, mapY));
-            
+
+            Map<OctDirection, Tile> neighbors = terrainModel.getNeighbors(mapX, mapY);
+            Map<OctDirection, TerrainType> terrains = new HashMap<>();
+            for (OctDirection dir : neighbors.keySet()) {
+                Tile n = neighbors.get(dir);
+                TerrainType type = terrainData.getData(n.getMapX(), n.getMapY());
+                terrains.put(dir, type);
+            }
+            Set<TileIndex> indices = indexProvider.getOverlaysFor(terrain, terrains);
+
             for (TileIndex overlay : indices)
             {
                 drawTile(g, overlay, mapX, mapY);
@@ -88,12 +102,12 @@ public class TileRendererBlending extends AbstractTileRenderer
     }
 
     /**
-     * 
+     *
      */
     public void nextFrame()
     {
         indexProvider.nextFrame();
-        
+
     }
 
 }

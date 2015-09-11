@@ -19,7 +19,10 @@ package view;
 
 import java.awt.Graphics2D;
 
-import terrain.TerrainModel;
+import common.GridData;
+
+import terrain.TileModel;
+import terrain.TerrainType;
 import tiles.TileImage;
 import tiles.TileIndex;
 import tiles.TileSet;
@@ -30,15 +33,18 @@ import tiles.TileSet;
  */
 public abstract class AbstractTileRenderer
 {
-    private final TerrainModel terrainModel;
-    private final TileSet tileset;
+    protected final TileModel terrainModel;
+    protected final TileSet tileset;
+    protected final GridData<TerrainType> terrainData;
 
     /**
+     * @param terrainData
      * @param terrainModel
      * @param tileset
      */
-    public AbstractTileRenderer(TerrainModel terrainModel, TileSet tileset)
+    public AbstractTileRenderer(GridData<TerrainType> terrainData, TileModel terrainModel, TileSet tileset)
     {
+        this.terrainData = terrainData;
         this.terrainModel = terrainModel;
         this.tileset = tileset;
     }
@@ -46,7 +52,7 @@ public abstract class AbstractTileRenderer
     protected void drawTile(Graphics2D g, TileIndex tileIndex, int mapX, int mapY)
     {
         TileImage img = tileset.getTileImage(tileIndex);
-        
+
         int imgWidth = img.getTileImageWidth();
         int imgHeight = img.getTileImageHeight();
 
@@ -54,7 +60,7 @@ public abstract class AbstractTileRenderer
         int sy1 = img.getTileImageY(tileIndex);
         int sx2 = sx1 + imgWidth;
         int sy2 = sy1 + imgHeight;
-        
+
         int offX = img.getOverlapLeft();
         int offY = img.getOverlapTop();
 
@@ -67,7 +73,7 @@ public abstract class AbstractTileRenderer
     /**
      * @return the terrainModel
      */
-    protected TerrainModel getTerrainModel()
+    protected TileModel getTerrainModel()
     {
         return terrainModel;
     }
@@ -80,5 +86,11 @@ public abstract class AbstractTileRenderer
         return tileset;
     }
 
-    
+    /**
+     * @return the terrainData
+     */
+    public GridData<TerrainType> getTerrainData()
+    {
+        return terrainData;
+    }
 }

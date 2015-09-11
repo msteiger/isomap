@@ -35,7 +35,7 @@ import common.OctDirection;
  * TODO Type description
  * @author Martin Steiger
  */
-public class IsoTerrainModel implements TerrainModel
+public class IsoTileModel implements TileModel
 {
     private final GridData<Tile> tiles;
 
@@ -48,10 +48,10 @@ public class IsoTerrainModel implements TerrainModel
     /**
      * @param data the terrain data
      */
-    public IsoTerrainModel(GridData<TerrainType> terrainData, TileSet tileSet)
+    public IsoTileModel(int mapWidth, int mapHeight, TileSet tileSet)
     {
-        mapWidth = terrainData.getWidth();
-        mapHeight = terrainData.getHeight();
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
 
         this.tiles = new GridData<Tile>(mapWidth, mapHeight, null);
         this.tileSet = tileSet;
@@ -60,8 +60,7 @@ public class IsoTerrainModel implements TerrainModel
         {
             for (int x = 0; x < mapWidth; x++)
             {
-                TerrainType terrain = terrainData.getData(x, y);
-                Tile tile = new Tile(x, y, terrain);
+                Tile tile = new Tile(x, y);
                 tiles.setData(x, y, tile);
             }
         }
@@ -82,12 +81,19 @@ public class IsoTerrainModel implements TerrainModel
     public int getMapWidth()
     {
         return mapWidth;
-    }    
-    
-    
+    }
+
+
     @Override
     public Tile getTile(int mapX, int mapY)
     {
+        // x and y are often invalid map coords.
+        if (mapX < 0 || mapX >= getMapWidth())
+            return null;
+
+        if (mapY < 0 || mapY >= getMapHeight())
+            return null;
+
         return tiles.getData(mapX, mapY);
     }
 
@@ -102,7 +108,7 @@ public class IsoTerrainModel implements TerrainModel
     {
         return y * tileSet.getTileHeight() / 2;
     }
-    
+
     @Override
     public Optional<Tile> getTileAtWorldPos(int worldX, int worldY)
     {
@@ -110,34 +116,34 @@ public class IsoTerrainModel implements TerrainModel
         double h = tileSet.getTileHeight();
 
         // Origin is at (0, h/2)
-        worldY -= h / 2; 
+        worldY -= h / 2;
 
         //     ( w/2 )        ( w/2 )
-        // r = (     )    c = (     ) 
+        // r = (     )    c = (     )
         //     ( h/2 )        (-h/2 )
-        
+
         // x = r * w + c * w
         // y = r * h - c * h
-        
+
         // solving for r gives r = y/h + c
-        
+
         // Math.floor() rounds negative values down whereas casting to int rounds them up
-        int r = (int) Math.floor(worldX / w + worldY / h); 
+        int r = (int) Math.floor(worldX / w + worldY / h);
         int c = (int) Math.floor(worldX / w - worldY / h);
 
         // r and c are only one tile edge long
         int x = (int)Math.floor((r + c) / 2.0);
-        
+
         // r - c always >= 0
         int y = r - c;
-        
+
         if (x >= 0 && x < mapWidth &&
             y >= 0 && y < mapHeight)
 
         {
             return Optional.of(getTile(x, y));
         }
-        
+
         return Optional.absent();
     }
 
@@ -146,12 +152,12 @@ public class IsoTerrainModel implements TerrainModel
     {
         int tileWidth = tileSet.getTileWidth();
         int tileHeight = tileSet.getTileHeight();
-        
-        // this computes the map-y based on rectangular shapes 
+
+        // this computes the map-y based on rectangular shapes
         // it is then independent of x - basically the inverse of getWorldY()
         int y0 = (worldY0 * 2) / tileHeight - 1;
         int y1 = (worldY1 * 2) / tileHeight;
-        
+
         // Restrict to map bounds
         int minY = Math.max(y0, 0);
         int maxY = Math.min(y1, mapHeight - 1);
@@ -174,76 +180,60 @@ public class IsoTerrainModel implements TerrainModel
 
         return result;
     }
- 
+
     @Override
-    public Map<OctDirection, TerrainType> getNeighbors(int mapX, int mapY)
+    public Map<OctDirection, Tile> getNeighbors(int mapX, int mapY)
     {
-        Map<OctDirection, TerrainType> pattern = new HashMap<OctDirection, TerrainType>();
-        
+        Map<OctDirection, Tile> pattern = new HashMap<>();
+
         for (OctDirection dir : OctDirection.values())
         {
-            TerrainType neigh = getNeighborFor(mapX, mapY, dir);
-            
-            if (neigh != UNDEFINED)
+            Tile neigh = getNeighborFor(mapX, mapY, dir);
+
+            if (neigh != null)
                 pattern.put(dir, neigh);
         }
 
         return pattern;
     }
-    
-    /**
-     * @param x the x coord
-     * @param y the y coord
-     * @return the type or UNDEFINED if x or y are invalid
-     */
-    private TerrainType getTerrain(int x, int y)
-    {
-        // x and y are often invalid map coords.
-        if (x < 0 || x >= getMapWidth())
-            return UNDEFINED;
-    
-        if (y < 0 || y >= getMapHeight())
-            return UNDEFINED;
-        
-        return getTile(x,y).getTerrain();
-    }
 
-    private TerrainType getNeighborFor(int x, int y, OctDirection dir)
+    @Override
+    public Tile getNeighborFor(int x, int y, OctDirection dir)
     {
         switch (dir)
         {
         case EAST:
-            return getTerrain(x + 1, y);
-            
+            return getTile(x + 1, y);
+
         case NORTH:
-            return getTerrain(x, y - 2);
+            return getTile(x, y - 2);
 
         case SOUTH:
-            return getTerrain(x, y + 2);
-            
+            return getTile(x, y + 2);
+
         case WEST:
-            return getTerrain(x - 1, y);
+            return getTile(x - 1, y);
 
         case NORTH_EAST:
-            if (isOdd(y)) 
-                return getTerrain(x + 1, y - 1); else 
-                return getTerrain(x, y - 1);
-            
+            if (isOdd(y))
+                return getTile(x + 1, y - 1); else
+                return getTile(x, y - 1);
+
         case NORTH_WEST:
             if (isOdd(y))
-                return getTerrain(x, y - 1); else
-                return getTerrain(x - 1, y - 1);
+                return getTile(x, y - 1); else
+                return getTile(x - 1, y - 1);
         case SOUTH_EAST:
             if (isOdd(y))
-                return getTerrain(x + 1, y + 1); else
-                return getTerrain(x, y + 1);
+                return getTile(x + 1, y + 1); else
+                return getTile(x, y + 1);
         case SOUTH_WEST:
             if (isOdd(y))
-                return getTerrain(x, y + 1); else
-                return getTerrain(x - 1, y + 1);
+                return getTile(x, y + 1); else
+                return getTile(x - 1, y + 1);
         }
 
-        return UNDEFINED;
+        return null;
     }
-    
+
 }

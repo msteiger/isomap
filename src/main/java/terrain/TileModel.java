@@ -28,14 +28,14 @@ import common.OctDirection;
  * Defines a terrain model in a very general form
  * @author Martin Steiger
  */
-public interface TerrainModel
+public interface TileModel
 {
     /**
      * @param mapX the map x coordinate
      * @param mapY the map y coordinate
      * @return a map that contains all neighbor terrain types
      */
-    public Map<OctDirection, TerrainType> getNeighbors(int mapX, int mapY);
+    public Map<OctDirection, Tile> getNeighbors(int mapX, int mapY);
 
     /**
      * @param worldX0 the left world coordinate
@@ -72,7 +72,7 @@ public interface TerrainModel
      * @param mapY the map y coordinate
      * @return the world x coordinate
      */
-    public Tile getTile(int x, int y);
+    public Tile getTile(int mapX, int mapY);
 
     /**
      * @return the map width
@@ -83,4 +83,6 @@ public interface TerrainModel
      * @return the map height
      */
     public int getMapHeight();
+
+    Tile getNeighborFor(int x, int y, OctDirection dir);
 }
