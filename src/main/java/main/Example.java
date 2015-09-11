@@ -42,12 +42,9 @@ public class Example
 
     public static void main(String[] args) throws Exception
     {
-        DataStore webDataStore = DataStoreFactory.getWebDao(new URL("http://msteiger.bplaced.net/bfw/data/core/images/terrain"));
         DataStore localDataStore = DataStoreFactory.createLocalDao(Paths.get("data/wesnoth/images/terrain"));
 
-        DataStore cachingDataStore = new CachingDataStore(webDataStore, localDataStore);
-
-        final ExampleComponent comp = new ExampleComponent(cachingDataStore);
+        final ExampleComponent comp = new ExampleComponent(localDataStore);
 
         Timer timer = new Timer(100, new ActionListener()
         {

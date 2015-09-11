@@ -66,7 +66,7 @@ public class HexTerrainModel implements TerrainModel
                 tiles.setData(x, y, tile);
             }
         }
-        
+
     }
 
     private static boolean isOdd(int v)
@@ -84,8 +84,8 @@ public class HexTerrainModel implements TerrainModel
     public int getMapWidth()
     {
         return mapWidth;
-    }    
-    
+    }
+
     @Override
     public Tile getTile(int x, int y)
     {
@@ -103,41 +103,41 @@ public class HexTerrainModel implements TerrainModel
     {
         return y * tileSet.getTileHeight() + (x % 2) * tileSet.getTileHeight() / 2;
     }
-    
+
     @Override
     public Optional<Tile> getTileAtWorldPos(int x, int y)
     {
         double a = tileSet.getTileWidth() / 2;
         double b = tileSet.getTileHeight() / 2;
         double c = tileSet.getTopLength() / 2.0;
-        
+
         x -= tileSet.getTileWidth() / 2;
         y -= tileSet.getTileHeight() / 2;
-        
+
         // Find out which major row and column we are on:
         int row = (int)(y / b);
         int col = (int)(x / (a + c));
-     
+
         // Compute the offset into these row and column:
         double dy = y - row * b;
         double dx = x - col * (a + c);
-     
+
         // Are we on the left of the hexagon edge, or on the right?
         if (((row ^ col) & 1) == 0)
             dy = b - dy;
         int right = dy * (a - c) < b * (dx - c) ? 1 : 0;
-     
+
         // Now we have all the information we need, just fine-tune row and column.
         row += (col ^ row ^ right) & 1;
         col += right;
-        
+
         if (col >= 0 && col < mapWidth &&
             row >= 0 && row < mapHeight * 2)
 
         {
             return Optional.of(getTile(col, row / 2));
         }
-        
+
         return Optional.absent();
     }
 
@@ -145,20 +145,20 @@ public class HexTerrainModel implements TerrainModel
     public List<Tile> getTilesInRect(int worldX0, int worldY0, int worldX1, int worldY1)
     {
         int tileHeight = tileSet.getTileHeight() / 2;
-        
+
         int avgWidth = (tileSet.getTopLength() + tileSet.getTileWidth()) / 2;
-        
+
         // the width of one diagonal
         int leftIn = (tileSet.getTileWidth() - tileSet.getTopLength()) / 2;
-        
-        // this computes the map-y based on rectangular shapes 
+
+        // this computes the map-y based on rectangular shapes
         // it is then independent of x - basically the inverse of getWorldY()
-        
+
         int y02 = worldY0 / tileHeight - 1;    // the prev. row is displayed as it is 2 rows high
         int y12 = worldY1 / tileHeight - 1;
         int x0 = (worldX0 - leftIn) / avgWidth;
         int x1 = worldX1 / avgWidth;
-        
+
         // Restrict to map bounds
         int minY = Math.max(y02, 0);
         int maxY = Math.min(y12, 2 * mapHeight - 2);
@@ -175,12 +175,12 @@ public class HexTerrainModel implements TerrainModel
             {
                 result.add(getTile(x, minY / 2));
             }
-            
+
             minY++;
         }
-        
+
         // minY is always even here
-        
+
         for (int y = minY; y <= maxY; y += 2)
         {
             for (int x = minX; x <= maxX; x++)
@@ -198,26 +198,26 @@ public class HexTerrainModel implements TerrainModel
                 result.add(getTile(x, maxY / 2 + 1));
             }
         }
-        
+
         return result;
     }
- 
+
     @Override
     public Map<OctDirection, TerrainType> getNeighbors(int mapX, int mapY)
     {
         Map<OctDirection, TerrainType> pattern = new HashMap<OctDirection, TerrainType>();
-        
+
         for (OctDirection dir : OctDirection.values())
         {
             TerrainType neigh = getNeighborFor(mapX, mapY, dir);
-            
+
             if (neigh != UNDEFINED)
                 pattern.put(dir, neigh);
         }
 
         return pattern;
     }
-    
+
     /**
      * @param x the x coord
      * @param y the y coord
@@ -228,10 +228,10 @@ public class HexTerrainModel implements TerrainModel
         // x and y are often invalid map coords.
         if (x < 0 || x >= getMapWidth())
             return UNDEFINED;
-    
+
         if (y < 0 || y >= getMapHeight())
             return UNDEFINED;
-        
+
         return getTile(x,y).getTerrain();
     }
 
@@ -244,35 +244,35 @@ public class HexTerrainModel implements TerrainModel
 
         case SOUTH:
             return getTerrain(x, y + 1);
-            
+
         case NORTH_EAST:
-            if (isOdd(y)) 
-                return getTerrain(x + 1, y); else 
+            if (isOdd(x))
+                return getTerrain(x + 1, y); else
                 return getTerrain(x + 1, y - 1);
-            
+
         case NORTH_WEST:
-            if (isOdd(y))
+            if (isOdd(x))
                 return getTerrain(x - 1, y); else
                 return getTerrain(x - 1, y - 1);
-            
+
         case SOUTH_EAST:
-            if (isOdd(y))
+            if (isOdd(x))
                 return getTerrain(x + 1, y + 1); else
                 return getTerrain(x + 1, y);
-            
+
         case SOUTH_WEST:
-            if (isOdd(y))
+            if (isOdd(x))
                 return getTerrain(x - 1, y + 1); else
                 return getTerrain(x - 1, y);
-            
+
         case EAST:
             return UNDEFINED;
-            
+
         case WEST:
             return UNDEFINED;
         }
-        
+
         return UNDEFINED;
     }
-    
+
 }
