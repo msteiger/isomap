@@ -7,3 +7,9 @@
 
 # ignore generated maven stuff
 target/
+
+bin/
+
+.classpath
+.project
+.settings/
