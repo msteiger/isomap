@@ -31,8 +31,12 @@ import isomap.tile.model.TileModel;
  */
 public class TileRendererGrid extends AbstractTileRenderer {
 
-    public TileRendererGrid(TileModel terrainModel, TileSet tileset) {
-        super(null, terrainModel, tileset);
+    private TileSet tileset;
+    private TileModel tileModel;
+
+    public TileRendererGrid(TileModel tileModel, TileSet tileset) {
+        this.tileModel = tileModel;
+        this.tileset = tileset;
     }
 
     public void drawTiles(Graphics2D g, List<Tile> visibleTiles) {
@@ -40,9 +44,8 @@ public class TileRendererGrid extends AbstractTileRenderer {
             int mapY = tile.getMapY();
             int mapX = tile.getMapX();
 
-            TileIndex idx = getTileset().getGridTileIndex();
-            TileImage img = tileset.getTileImage(idx).getImage(idx);
-            drawTile(g, img, mapX, mapY);
+            TileImage img = tileset.getGridTileImage();
+            drawTile(g, tileModel, img, mapX, mapY);
         }
     }
 

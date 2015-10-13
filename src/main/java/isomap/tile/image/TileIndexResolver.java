@@ -18,6 +18,7 @@
 package isomap.tile.image;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -32,21 +33,21 @@ import isomap.terrain.TerrainType;
  * TODO Type description
  */
 public class TileIndexResolver {
-    private List<TileIndexGroup> tigs = new ArrayList<TileIndexGroup>();
+    private List<TileImageGroup> tigs = new ArrayList<TileImageGroup>();
 
     public TileIndexResolver(TileSet ts) {
         this.tigs = ts.getIndexGroups();
     }
 
-    public Set<TileIndex> getOverlaysFor(TerrainType type, Map<OctDirection, TerrainType> pattern) {
-        Set<TileIndex> set = new HashSet<>();
+    public Collection<TileImage> getOverlaysFor(TerrainType type, Map<OctDirection, TerrainType> pattern) {
+        Set<TileImage> set = new HashSet<>();
 
         // Set<TerrainType> differentTypes = new HashSet<>(pattern.values()); //
         // reduce collection to set -> remove duplicates
 
-        for (TileIndexGroup tig : tigs) {
+        for (TileImageGroup tig : tigs) {
             if (isOverlayOk(type, pattern, tig))
-                return tig.getIndices();
+                return tig.getImages();
         }
 
         return set;
@@ -57,7 +58,7 @@ public class TileIndexResolver {
      * @param pattern
      * @param tig
      */
-    private boolean isOverlayOk(TerrainType type, Map<OctDirection, TerrainType> pattern, TileIndexGroup tig) {
+    private boolean isOverlayOk(TerrainType type, Map<OctDirection, TerrainType> pattern, TileImageGroup tig) {
         if (type != SimpleTerrainType.SAND)
             return false;
 
@@ -77,18 +78,18 @@ public class TileIndexResolver {
         return true;
     }
 
-    public Set<TileIndex> getIndicesFor(TerrainType type, Map<OctDirection, TerrainType> pattern) {
-        for (TileIndexGroup tig : tigs) {
+    public Collection<TileImage> getIndicesFor(TerrainType type, Map<OctDirection, TerrainType> pattern) {
+        for (TileImageGroup tig : tigs) {
             if (tig.getTerrain() == type) {
                 if (doesMatch(tig, pattern)) {
-                    return tig.getIndices();
+                    return tig.getImages();
                 }
             }
         }
 
-        for (TileIndexGroup tig : tigs) {
+        for (TileImageGroup tig : tigs) {
             if (isDefault(tig, type))
-                return tig.getIndices();
+                return tig.getImages();
         }
 
         return Collections.emptySet();
@@ -98,7 +99,7 @@ public class TileIndexResolver {
      * @param type
      * @return
      */
-    private boolean isDefault(TileIndexGroup supp, TerrainType type) {
+    private boolean isDefault(TileImageGroup supp, TerrainType type) {
         if (supp.getTerrain() != type)
             return false;
 
@@ -120,7 +121,7 @@ public class TileIndexResolver {
      * @param tilePattern
      * @return
      */
-    private boolean doesMatch(TileIndexGroup supp, Map<OctDirection, TerrainType> needed) {
+    private boolean doesMatch(TileImageGroup supp, Map<OctDirection, TerrainType> needed) {
         for (OctDirection dir : needed.keySet()) {
             TerrainType ava = supp.getBorder(dir);
 

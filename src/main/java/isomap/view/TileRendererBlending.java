@@ -39,13 +39,17 @@ import isomap.tile.model.TileModel;
  */
 public class TileRendererBlending extends AbstractTileRenderer {
     private IndexProvider indexProvider;
+    private GridData<TerrainType> terrainData;
+    private TileModel tileModel;
+    private TileSet tileset;
 
     /**
      * @param terrainModel
      */
     public TileRendererBlending(GridData<TerrainType> terrainData, TileModel terrainModel, TileSet tileset) {
-        super(terrainData, terrainModel, tileset);
-
+        this.terrainData = terrainData;
+        this.tileModel = terrainModel;
+        this.tileset = tileset;
         this.indexProvider = new IndexProvider(terrainData, terrainModel, tileset);
     }
 
@@ -54,13 +58,12 @@ public class TileRendererBlending extends AbstractTileRenderer {
             int mapY = tile.getMapY();
             int mapX = tile.getMapX();
 
-            TileIndex currIndex = indexProvider.getCurrentIndex(mapX, mapY);
-            TileIndex nextIndex = indexProvider.getNextIndex(mapX, mapY);
+            TileImage currIndex = indexProvider.getCurrentIndex(mapX, mapY);
+            TileImage nextIndex = indexProvider.getNextIndex(mapX, mapY);
 
-            TileIndex invalid = getTileset().getInvalidTileIndex();
+            TileImage invalid = tileset.getInvalidTileImage();
 
-            TileImage img = tileset.getTileImage(currIndex).getImage(currIndex);
-            drawTile(g, img, mapX, mapY);
+            drawTile(g, tileModel, currIndex, mapX, mapY);
 
             TerrainType terrain = terrainData.getData(tile.getMapX(), tile.getMapY());
 
@@ -76,13 +79,12 @@ public class TileRendererBlending extends AbstractTileRenderer {
                 AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
 
                 g.setComposite(ac);
-                img = tileset.getTileImage(nextIndex).getImage(nextIndex);
 
-                drawTile(g, img, mapX, mapY);
+                drawTile(g, tileModel, nextIndex, mapX, mapY);
                 g.setComposite(oldComp);
             }
 
-            Map<OctDirection, Tile> neighbors = terrainModel.getNeighbors(mapX, mapY);
+            Map<OctDirection, Tile> neighbors = tileModel.getNeighbors(mapX, mapY);
             Map<OctDirection, TerrainType> terrains = new HashMap<>();
             for (OctDirection dir : neighbors.keySet()) {
                 Tile n = neighbors.get(dir);

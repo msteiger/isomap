@@ -17,6 +17,7 @@
 
 package isomap.tile.image;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -30,17 +31,14 @@ import isomap.terrain.TerrainType;
 /**
  * TODO Type description
  */
-public class TileIndexGroup {
+public class TileImageGroup {
     private final Map<OctDirection, TerrainType> map = new EnumMap<OctDirection, TerrainType>(OctDirection.class);
 
     private final TerrainType terrain;
 
-    private final Set<TileIndex> indices = new HashSet<TileIndex>();
+    private final Set<TileImage> indices = new HashSet<TileImage>();
 
-    /**
-     * @param tuple
-     */
-    public TileIndexGroup(TerrainType terrain, Map<OctDirection, TerrainType> borders) {
+    public TileImageGroup(TerrainType terrain, Map<OctDirection, TerrainType> borders) {
         map.putAll(borders);
         this.terrain = terrain;
     }
@@ -57,17 +55,17 @@ public class TileIndexGroup {
     }
 
     /**
-     * @param idx
+     * @param image
      */
-    public void addIndex(TileIndex idx) {
-        indices.add(idx);
+    public void addImage(TileImage image) {
+        indices.add(image);
     }
 
     public Map<OctDirection, TerrainType> getBorders() {
         return Collections.unmodifiableMap(map);
     }
 
-    public Set<TileIndex> getIndices() {
+    public Collection<TileImage> getImages() {
         return Collections.unmodifiableSet(indices);
     }
 

@@ -38,14 +38,12 @@ import isomap.tile.model.TileModel;
  */
 public class TileRendererDefault extends AbstractTileRenderer {
     private IndexProvider indexProvider;
+    private TileModel terrainModel;
+    private GridData<TerrainType> terrainData;
 
-    /**
-     * @param terrainModel
-     * @param view2
-     */
     public TileRendererDefault(GridData<TerrainType> terrainData, TileModel terrainModel, TileSet tileset) {
-        super(terrainData, terrainModel, tileset);
-
+        this.terrainData = terrainData;
+        this.terrainModel = terrainModel;
         this.indexProvider = new IndexProvider(terrainData, terrainModel, tileset);
     }
 
@@ -54,11 +52,10 @@ public class TileRendererDefault extends AbstractTileRenderer {
             int mapY = tile.getMapY();
             int mapX = tile.getMapX();
 
-            TileIndex currIndex = indexProvider.getCurrentIndex(mapX, mapY);
-            TileImage img = tileset.getTileImage(currIndex).getImage(currIndex);
-            drawTile(g, img, mapX, mapY);
+            TileImage img = indexProvider.getCurrentIndex(mapX, mapY);
+            drawTile(g, terrainModel, img, mapX, mapY);
 
-            Map<OctDirection, Tile> neighbors = getTerrainModel().getNeighbors(mapX, mapY);
+            Map<OctDirection, Tile> neighbors = terrainModel.getNeighbors(mapX, mapY);
             Map<OctDirection, TerrainType> terrains = new HashMap<>();
             for (OctDirection dir : neighbors.keySet()) {
                 Tile n = neighbors.get(dir);

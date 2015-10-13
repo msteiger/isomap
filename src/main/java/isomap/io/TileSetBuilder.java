@@ -36,7 +36,7 @@ import javax.imageio.ImageIO;
 import isomap.common.OctDirection;
 import isomap.terrain.SimpleTerrainType;
 import isomap.terrain.TerrainType;
-import isomap.tile.image.TileIndexGroup;
+import isomap.tile.image.TileImageGroup;
 import isomap.tile.image.TileSet;
 
 /**
@@ -58,8 +58,8 @@ public class TileSetBuilder {
         // bw.println("tileOverlapX = " + ts.getOverlapX());
         // bw.println("tileOverlapY = " + ts.getOverlapY());
 
-        for (TileIndexGroup tig : ts.getIndexGroups()) {
-            bw.println(tig.getIndices() + " - " + tig.getTerrain() + " - " + tig.getBorders());
+        for (TileImageGroup tig : ts.getIndexGroups()) {
+            bw.println(tig.getImages() + " - " + tig.getTerrain() + " - " + tig.getBorders());
         }
 
         bw.close();

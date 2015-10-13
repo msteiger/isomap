@@ -37,7 +37,7 @@ public class TileSet {
 
     private final Map<TileIndex, TileImagePage> images = new HashMap<>();
     private final Map<Integer, TileIndex> indices = new HashMap<>();
-    private final List<TileIndexGroup> tigs = new ArrayList<TileIndexGroup>();
+    private final List<TileImageGroup> tigs = new ArrayList<TileImageGroup>();
 
     private TileIndex cursorTileIndex;
     private TileIndex invalidTileIndex;
@@ -71,11 +71,11 @@ public class TileSet {
     }
 
     public void defineTerrain(Set<Integer> set, TerrainType type, Map<OctDirection, TerrainType> borders) {
-        TileIndexGroup tig = getIndexGroup(type, borders);
+        TileImageGroup tig = getIndexGroup(type, borders);
 
         for (Integer idx : set) {
             TileIndex tileIndex = indices.get(idx);
-            tig.addIndex(tileIndex);
+            tig.addImage(getTileImage(tileIndex).getImage(tileIndex));
         }
     }
 
@@ -87,19 +87,19 @@ public class TileSet {
         return tileHeight;
     }
 
-    public List<TileIndexGroup> getIndexGroups() {
+    public List<TileImageGroup> getIndexGroups() {
         return Collections.unmodifiableList(tigs);
     }
 
-    private TileIndexGroup getIndexGroup(TerrainType type, Map<OctDirection, TerrainType> borders) {
-        for (TileIndexGroup tig : tigs) {
+    private TileImageGroup getIndexGroup(TerrainType type, Map<OctDirection, TerrainType> borders) {
+        for (TileImageGroup tig : tigs) {
             if (tig.getTerrain() == type) {
                 if (tig.getBorders().equals(borders))
                     return tig;
             }
         }
 
-        TileIndexGroup tig = new TileIndexGroup(type, borders);
+        TileImageGroup tig = new TileImageGroup(type, borders);
 
         tigs.add(tig);
 
@@ -137,6 +137,22 @@ public class TileSet {
 
     public void setGridTileIndex(int index) {
         this.gridTileIndex = indices.get(index);
+    }
+
+    /**
+     * @return
+     */
+    public TileImage getInvalidTileImage() {
+        TileIndex idx = getInvalidTileIndex();
+        return images.get(idx).getImage(idx);
+    }
+
+    /**
+     * @return
+     */
+    public TileImage getGridTileImage() {
+        TileIndex idx = getGridTileIndex();
+        return images.get(idx).getImage(idx);
     }
 
 }

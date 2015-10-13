@@ -32,11 +32,13 @@ import isomap.tile.model.TileModel;
  * TODO Type description
  */
 public class TileRendererCursor extends AbstractTileRenderer {
-    /**
-     * @param gridTile the grid tile index
-     */
-    public TileRendererCursor(TileModel terrainModel, TileSet tileset) {
-        super(null, terrainModel, tileset);
+
+    private TileSet tileset;
+    private TileModel tileModel;
+
+    public TileRendererCursor(TileModel tileModel, TileSet tileset) {
+        this.tileModel = tileModel;
+        this.tileset = tileset;
     }
 
     public void drawTiles(Graphics2D g, Collection<Tile> hoveredTiles) {
@@ -52,10 +54,10 @@ public class TileRendererCursor extends AbstractTileRenderer {
             TileIndex idx = tileset.getCursorTileIndex();
             TileImage img = tileset.getTileImage(idx).getImage(idx);
 
-            drawTile(g, img, mapX, mapY);
+            drawTile(g, tileModel, img, mapX, mapY);
 
-            int worldX = terrainModel.getWorldX(mapX, mapY);
-            int worldY = terrainModel.getWorldY(mapX, mapY);
+            int worldX = tileModel.getWorldX(mapX, mapY);
+            int worldY = tileModel.getWorldY(mapX, mapY);
 
             g.setColor(Color.WHITE);
             FontMetrics fm = g.getFontMetrics();
